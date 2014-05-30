@@ -5,8 +5,8 @@
     "json_glob": "dashboards/**/*.json"
   },
   "jenkins": {
-    "url": "https://deploy.preview.performance.service.gov.uk",
-    "job": "spotlight-config-deploy",
+    "url": "https://jenkins.server",
+    "job": "config-deploy",
     "token": "[JOB_TOKEN_HERE]",
     "creds": {
        "user": "[USERNAME_HERE]",
