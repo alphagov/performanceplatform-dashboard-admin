@@ -37,7 +37,9 @@ repo.open(function() {
       if (err) {
         console.error(err);
       } else {
-        res.redirect('/');
+        jenkins.deploy(function () {
+          res.redirect('/');
+        });
       }
     });
 
