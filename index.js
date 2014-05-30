@@ -1,9 +1,11 @@
 var express = require('express'),
     config = require('./config'),
-    StubRepo = require('./src/stub_repo');
+    StubRepo = require('./src/stub_repo'),
+    Jenkins = require('./src/jenkins');
 
 var app = express(),
-    repo = StubRepo.fromConfig(config.stub);
+    repo = StubRepo.fromConfig(config.stub),
+    jenkins = Jenkins.fromConfig(config.jenkins);
 
 repo.open(function() {
 
