@@ -10,9 +10,54 @@
   margin: -6px 10px 0 0;
 }
 
+form {
+  display: inline;
+}
+
+form.publish .btn {
+  margin-left: 10px;
+}
+
 .draft {
   background: #f00;
   color: #fff;
   margin-left: 6px;
   padding: 2px;
+}
+
+#dashboards {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#dashboards > li {
+  margin-top: 80px;
+}
+#dashboards > li:first-of-type {
+  margin: 0;
+}
+
+#dashboards ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#dashboards ol li {
+  position: relative;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#dashboards dt {
+  margin-top: 20px;
+  text-transform: uppercase;
+  font-size: 24px;
+}
+
+abbr.dept {
+  color: #aaa;
+  position: absolute;
+  right: 0;
 }

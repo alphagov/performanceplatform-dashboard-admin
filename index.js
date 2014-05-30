@@ -1,8 +1,10 @@
 var express = require('express'),
     config = require('./config'),
-    StubRepo = require('./src/stub_repo'),
-    Jenkins = require('./src/jenkins'),
     bodyParser = require('body-parser');
+    
+var StubRepo = require('./src/stub_repo'),
+    Jenkins = require('./src/jenkins'),
+    Dashboards = require('./src/dashboards');
 
 var app = express(),
     repo = StubRepo.fromConfig(config.stub),
@@ -17,7 +19,20 @@ repo.open(function() {
   app.use(bodyParser());
 
   app.get('/', function (req, res) {
-    res.render('index', { "dashboards": repo.dashboards });
+    var groupedDashboards = Dashboards.splitByType(repo.dashboards);
+
+    groupedDashboards = Object.keys(groupedDashboards).reduce(
+      function(out, dashboardGroup) {
+        var dashboards = groupedDashboards[dashboardGroup];
+        out[dashboardGroup] =
+          Dashboards.alphabetise(dashboards);
+        return out;
+      }, {});
+
+
+    res.render('index', {
+      "groupedDashboards": groupedDashboards
+    });
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {

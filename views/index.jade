@@ -4,11 +4,20 @@ block header
   title Performance Platform dashboard admin
 
 block content
-  h1 Performance Platform dashboard admin
   ul#dashboards
-    each dashboard in dashboards
+    each alphabetisedDashboards, group in groupedDashboards
       li
-        a(href='/dashboard/' + dashboard.slug + '/edit')
-          =dashboard.title
-        if dashboard.published === false
-          span.draft DRAFT
+        h2= group
+        each dashboards, firstLetter in alphabetisedDashboards
+          dt= firstLetter
+          dd
+            ol
+              each dashboard in dashboards
+                li
+                  a(href='/dashboard/' + dashboard.slug + '/edit')
+                    =dashboard.title
+                  if dashboard.published === false
+                    span.draft DRAFT
+                  if dashboard.department
+                    abbr(title=dashboard.department.title, class='dept')
+                      =dashboard.department.abbr

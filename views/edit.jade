@@ -23,7 +23,7 @@ block content
     button(type='submit', class='btn btn-default') Save
 
   if dashboard.published === false
-    form(method='post', action='/dashboard/' + dashboard.slug + '/publish')
+    form(method='post', class='publish', action='/dashboard/' + dashboard.slug + '/publish')
       button(type='submit', class='btn btn-danger') Publish
 
 
