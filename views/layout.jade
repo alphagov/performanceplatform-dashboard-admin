@@ -13,5 +13,10 @@ html(lang="en")
           a.navbar-brand(href='/')
             img(src='/images/header-crown.png', alt='', id='header-crown')
             span Performance Platform dashboard admin
+          p#prototype.navbar-text Prototype
+        p.navbar-text.navbar-right
+          | Committing as #{settings.committer.name}
+          a(href='https://secure.gravatar.com/', target='_blank')
+            img(src='http://www.gravatar.com/avatar/#{settings.committer.emailHash}?size=140', height='20', width='20', title=settings.committer.email, id='gravatar')
     .container
       block content

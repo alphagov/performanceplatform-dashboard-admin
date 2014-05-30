@@ -1,14 +1,19 @@
 var express = require('express'),
     config = require('./config'),
-    bodyParser = require('body-parser');
-    
+    bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
+    flash = require('connect-flash');
+
 var StubRepo = require('./src/stub_repo'),
     Jenkins = require('./src/jenkins'),
-    Dashboards = require('./src/dashboards');
+    Dashboards = require('./src/dashboards'),
+    GitConfig = require('./src/git_config');
 
 var app = express(),
     repo = StubRepo.fromConfig(config.stub),
-    jenkins = Jenkins.fromConfig(config.jenkins);
+    jenkins = Jenkins.fromConfig(config.jenkins),
+    gitConfig = new GitConfig();
 
 repo.open(function() {
 
@@ -17,6 +22,20 @@ repo.open(function() {
 
   app.use(express.static('public'));
   app.use(bodyParser());
+
+  // Session
+  app.use(cookieParser('super-secret-string'));
+  app.use(session({ cookie: { maxAge: 43200 }})); // 12 hours
+
+  app.use(flash());
+
+  gitConfig.getCommitterMetadata(function (err, data) {
+    if (err) {
+      console.error('Error getting committer metadata:', err);
+    }
+
+    app.set('committer', data);
+  });
 
   app.get('/', function (req, res) {
     var groupedDashboards = Dashboards.splitByType(repo.dashboards);
@@ -77,4 +96,5 @@ repo.open(function() {
 
   app.listen(3000);
 
+  console.log('Performance Platform dashboard admin is ready at http://localhost:3000/ ...');
 });

@@ -17,7 +17,7 @@ block content
                   a(href='/dashboard/' + dashboard.slug + '/edit')
                     =dashboard.title
                   if dashboard.published === false
-                    span.draft DRAFT
+                    span.badge.draft Not published
                   if dashboard.department
                     abbr(title=dashboard.department.title, class='dept')
                       =dashboard.department.abbr
