@@ -1,0 +1,7 @@
+{
+  "stub": {
+    "path": "./stub-repo",
+    "remote": "git@github.com:alphagov/spotlight-config.git",
+    "json_glob": "dashboards/**/*.json"
+  }
+}

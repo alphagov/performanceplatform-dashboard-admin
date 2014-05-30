@@ -1,14 +1,22 @@
-var express = require('express');
+var express = require('express'),
+    config = require('./config'),
+    StubRepo = require('./src/stub_repo');
 
-var app = express();
+var app = express(),
+    repo = StubRepo.fromConfig(config.stub);
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+repo.open(function() {
 
-app.use(express.static('public'));
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
 
-app.get('/', function (req, res) {
-  res.render('index');
+  app.use(express.static('public'));
+
+  app.get('/', function (req, res) {
+    res.render('index', { "dashboards": repo.dashboards });
+  });
+
+  app.listen(3000);
+
 });
 
-app.listen(3000);
