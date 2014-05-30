@@ -34,6 +34,17 @@ StubRepo.prototype.update = function(callback) {
   }.bind(this));
 };
 
+StubRepo.prototype.save = function(message, files, callback) {
+  async.series([
+      this._repo.add.bind(this._repo, files),
+      this._repo.commit.bind(this._repo, message),
+      this._repo.push.bind(this._repo, 'origin', 'master', null)
+  ],
+  function (err, results) {
+    callback(err);
+  });
+};
+
 StubRepo.prototype._repoOpened = function(callback, repo) {
   this._repo = repo;
   this.update(callback);
