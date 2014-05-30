@@ -1,18 +1,9 @@
-doctype html
-html(lang="en")
-  head
-    title Performance Platform dashboard admin
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
-    link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
-  body
-    .navbar.navbar-inverse
-      .container
-        .navbar-header
-          a.navbar-brand(href='/') Performance Platform dashboard admin
-    .container
-      h1 Performance Platform dashboard admin
-      ul#dashboards
-        each dashboard in dashboards
-          li
-            a(href='/dashboard/' + dashboard.slug)
-              =dashboard.title
+extends layout
+
+block content
+  h1 Performance Platform dashboard admin
+  ul#dashboards
+    each dashboard in dashboards
+      li
+        a(href='/dashboard/' + dashboard.slug + '/edit')
+          =dashboard.title

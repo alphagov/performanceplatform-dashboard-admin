@@ -1,0 +1,29 @@
+extends layout
+
+block content
+  h1 Edit the "#{dashboard.title}" dashboard
+
+  form(method='post', action='/dashboard/' + dashboard.slug + '/edit')
+    .form-group
+      label(for='dashboard_slug') Slug
+      input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=true, value=dashboard.slug)
+
+    .form-group
+      label(for='dashboard_title') Title
+      input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
+
+    .form-group
+      label(for='dashboard_description') Description
+      textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
+        = dashboard.description
+
+    button(type='submit', class='btn btn-default') Save
+
+  if dashboard.published === false
+    form
+      button(type='submit', class='btn btn-danger') Publish
+
+
+  hr
+
+  a(href='https://www.preview.alphagov.co.uk/performance/' + dashboard.slug, target='_blank', class='btn btn-sm btn-info') Visit dashboard

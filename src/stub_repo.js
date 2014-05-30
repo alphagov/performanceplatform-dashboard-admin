@@ -34,15 +34,26 @@ StubRepo.prototype.update = function(callback) {
   }.bind(this));
 };
 
-StubRepo.prototype.save = function(message, files, callback) {
+StubRepo.prototype.save = function(dashboard, callback) {
+  var repoPath = require('path').join('dashboards', dashboard.slug + '.json'),
+      dashboardPath = require('path').join(this.path, repoPath),
+      dashboardJSON = JSON.stringify(dashboard, null, '  ') + "\n";
+
   async.series([
-      this._repo.add.bind(this._repo, files),
-      this._repo.commit.bind(this._repo, message),
+      fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
+      this._repo.add.bind(this._repo, [repoPath]),
+      this._repo.commit.bind(this._repo, 'Updated \'' + dashboard.slug + '\' dashboard'),
       this._repo.push.bind(this._repo, 'origin', 'master', null)
   ],
   function (err, results) {
     callback(err);
   });
+};
+
+StubRepo.prototype.selectDashboard = function (slug) {
+  return this.dashboards.filter(function (dashboard) {
+    return (dashboard.slug === slug);
+  })[0];
 };
 
 StubRepo.prototype._repoOpened = function(callback, repo) {

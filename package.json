@@ -8,7 +8,8 @@
     "glob": "4.0.0",
     "gitty": "2.1.0",
     "async": "0.9.0",
-    "request": "~2.36.0"
+    "request": "~2.36.0",
+    "body-parser": "1.2.2"
   },
   "devDependencies": {
     "nodemon": "1.1.1"
