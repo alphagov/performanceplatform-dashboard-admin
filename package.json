@@ -10,7 +10,11 @@
     "async": "0.9.0",
     "request": "~2.36.0"
   },
+  "devDependencies": {
+    "nodemon": "1.1.1"
+  },
   "scripts": {
+    "start": "./node_modules/nodemon/bin/nodemon.js index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
