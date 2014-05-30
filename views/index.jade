@@ -10,3 +10,5 @@ block content
       li
         a(href='/dashboard/' + dashboard.slug + '/edit')
           =dashboard.title
+        if dashboard.published === false
+          span.draft DRAFT

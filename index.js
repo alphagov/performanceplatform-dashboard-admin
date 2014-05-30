@@ -33,6 +33,18 @@ repo.open(function() {
     dashboard.title = req.body.dashboard_title;
     dashboard.description = req.body.dashboard_description;
 
+    saveRepo(dashboard, res);
+  });
+
+  app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
+    var dashboard = repo.selectDashboard(req.params[0]);
+
+    dashboard.published = true;
+
+    saveRepo(dashboard, res);
+  });
+
+  function saveRepo(dashboard, res) {
     repo.save(dashboard, function (err) {
       if (err) {
         console.error(err);
@@ -42,8 +54,7 @@ repo.open(function() {
         });
       }
     });
-
-  });
+  }
 
   app.listen(3000);
 

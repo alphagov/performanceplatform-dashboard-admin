@@ -9,3 +9,10 @@
 #header-crown {
   margin: -6px 10px 0 0;
 }
+
+.draft {
+  background: #f00;
+  color: #fff;
+  margin-left: 6px;
+  padding: 2px;
+}
