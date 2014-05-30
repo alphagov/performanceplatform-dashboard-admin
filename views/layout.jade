@@ -1,13 +1,17 @@
 doctype html
 html(lang="en")
   head
-    title Performance Platform dashboard admin
+    meta(charset='utf-8')
     link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
+    link(rel='stylesheet', href='/stylesheets/performance-platform-admin.css')
+    block header
   body
     .navbar.navbar-inverse
       .container
         .navbar-header
-          a.navbar-brand(href='/') Performance Platform dashboard admin
+          a.navbar-brand(href='/')
+            img(src='/images/header-crown.png', alt='', id='header-crown')
+            span Performance Platform dashboard admin
     .container
       block content

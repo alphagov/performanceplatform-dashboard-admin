@@ -1,0 +1,11 @@
+.navbar-inverse .navbar-brand {
+  color: #fff;
+}
+
+.navbar-inverse .navbar-brand:hover {
+  color: #ccc;
+}
+
+#header-crown {
+  margin: -6px 10px 0 0;
+}
