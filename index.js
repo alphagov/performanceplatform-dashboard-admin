@@ -50,7 +50,9 @@ repo.open(function() {
 
 
     res.render('index', {
-      "groupedDashboards": groupedDashboards
+      "groupedDashboards": groupedDashboards,
+      "messages": req.flash('info'),
+      "errors": req.flash('error')
     });
   });
 
@@ -87,8 +89,23 @@ repo.open(function() {
       if (err) {
         console.error(err);
       } else {
-        jenkins.deploy(function () {
-          res.redirect('/');
+        jenkins.deploy(function (err) {
+          if (err) {
+            console.error(err);
+            req.flash('error', err.message + ' Your changes have been made and are safe.');
+            res.redirect('/');
+          } else {
+            var updateMessage = [
+              'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
+              dashboard.slug,
+              '" target="_blank"> the &ldquo;',
+              dashboard.title,
+              '&rdquo; dashboard</a> have been saved. ',
+              'GOV.UK preview update in progress&hellip;'
+            ].join('');
+            req.flash('info', updateMessage);
+            res.redirect('/');
+          }
         });
       }
     });

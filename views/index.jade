@@ -4,6 +4,12 @@ block header
   title Performance Platform dashboard admin
 
 block content
+  if errors.length > 0
+    #info.alert.alert-danger
+      != errors
+  if messages.length > 0
+    #info.alert.alert-success
+      != messages
   ul#dashboards
     each alphabetisedDashboards, group in groupedDashboards
       li
