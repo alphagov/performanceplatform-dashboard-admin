@@ -10,6 +10,10 @@ block content
   if messages.length > 0
     #info.alert.alert-success
       != messages
+
+  #add-dashboard
+    a(href='/dashboard/new', class='btn btn-success') Add a new dashboard
+
   ul#dashboards
     each alphabetisedDashboards, group in groupedDashboards
       li

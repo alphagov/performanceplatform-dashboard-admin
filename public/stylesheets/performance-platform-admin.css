@@ -27,6 +27,14 @@
   margin-left: 5px;
 }
 
+h1 {
+  font-size: 3em;
+}
+
+body > .container p {
+  font-size: 1.6em;
+}
+
 form {
   display: inline;
 }
