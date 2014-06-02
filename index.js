@@ -48,7 +48,7 @@ repo.open(function() {
     dashboard.title = req.body.dashboard_title;
     dashboard.description = req.body.dashboard_description;
 
-    saveRepo(dashboard, res);
+    saveRepo(dashboard, req.body.commit_message, res);
   });
 
   app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
@@ -56,11 +56,15 @@ repo.open(function() {
 
     dashboard.published = true;
 
-    saveRepo(dashboard, res);
+    saveRepo(dashboard, 'Publish \'' + dashboard.title + '\' dashboard', res);
   });
 
-  function saveRepo(dashboard, res) {
-    repo.save(dashboard, function (err) {
+  function sanitiseCommitMessage (commitMessage) {
+    return commitMessage.replace(/"/g, '\'');
+  }
+
+  function saveRepo (dashboard, commitMessage, res) {
+    repo.save(dashboard, sanitiseCommitMessage(commitMessage), function (err) {
       if (err) {
         console.error(err);
       } else {
