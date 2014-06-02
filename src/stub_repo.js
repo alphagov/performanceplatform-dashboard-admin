@@ -1,7 +1,9 @@
 var async = require('async'),
+    fs = require('fs'),
     gitty = require('gitty'),
     glob = require('glob'),
-    fs = require('fs');
+    jsonschema = require('jsonschema'),
+    _ = require('lodash');
 
 function StubRepo(path, remote, json_glob, development) {
   this.path = path;
@@ -64,6 +66,49 @@ StubRepo.prototype.selectDashboard = function (slug) {
   return this.dashboards.filter(function (dashboard) {
     return (dashboard.slug === slug);
   })[0];
+};
+
+StubRepo.prototype.validate = function(dashboard) {
+  var validator = new jsonschema.Validator(),
+      schemaDirectory = require('path').join('../', this.path, 'schema'),
+      dashboardResult = validator.validate(dashboard,
+          require(schemaDirectory + '/dashboard')),
+      moduleResults;
+
+  function validateModule(module) {
+    var moduleType = module['module-type'],
+        moduleSchema, results;
+
+    try { moduleSchema = require(schemaDirectory + '/modules/' + moduleType); }
+    catch (e) { moduleSchema = require(schemaDirectory + '/module'); }
+
+    results = validator.validate(module, moduleSchema);
+
+    // need to consider tabs!
+    if (moduleType === 'tab') {
+      results = [results].concat(module.tabs.map(validateModule));
+    }
+
+    return results;
+  }
+
+  moduleResults = _.flatten(dashboard.modules.map(validateModule));
+
+  moduleResults.unshift(dashboardResult);
+
+  return moduleResults.filter(function(result) {
+    console.log(result)
+    return result.errors.length > 0;
+  }).map(function(result) {
+    return {
+      'id': result.instance.slug,
+      'errors': result.errors.map(function(e) { return e.stack; })
+                             .reduce(function(out, m) {
+                               if (out.indexOf(m) < 0) out.push(m);
+                               return out;
+                             }, [])
+    }
+  });
 };
 
 StubRepo.prototype._repoOpened = function(callback, repo) {

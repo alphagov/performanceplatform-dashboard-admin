@@ -12,7 +12,9 @@
     "body-parser": "1.2.2",
     "cookie-parser": "1.1.0",
     "express-session": "1.2.1",
-    "connect-flash": "0.1.1"
+    "connect-flash": "0.1.1",
+    "lodash": "2.4.1",
+    "jsonschema": "~0.4.0"
   },
   "devDependencies": {
     "nodemon": "1.1.1"
