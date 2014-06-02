@@ -59,15 +59,37 @@ repo.open(function() {
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
     res.render('edit', {
-      "dashboard": dashboard
+      "dashboard": dashboard,
+      "departments": repo.departments,
+      "customer_types": repo.customerTypes,
+      "business_models": repo.businessModels
     });
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
+    var dashboard = repo.selectDashboard(req.params[0]),
+        otherLinks = [];
 
     dashboard.title = req.body.dashboard_title;
     dashboard.description = req.body.dashboard_description;
+    dashboard['customer-type'] = req.body.dashboard_customer_type;
+    dashboard['business-model'] = req.body.dashboard_business_model;
+    dashboard['description-extra'] = req.body.dashboard_description_extra;
+    dashboard.relatedPages.transaction.url = req.body.dashboard_start_page_url;
+    dashboard.relatedPages.transaction.title = req.body.dashboard_start_page_title;
+
+    for (var i = 0; i < req.body.dashboard_link_url.length; i++) {
+      otherLinks.push({
+        url: req.body.dashboard_link_url[i],
+        title: req.body.dashboard_link_title[i]
+      });
+    }
+
+    dashboard.relatedPages.other = otherLinks;
+
+    dashboard.department = repo.departments.filter(function(d) {
+      return d.title === req.body.dashboard_department;
+    })[0];
 
     saveRepo(dashboard, req.body.commit_message, req, res);
   });

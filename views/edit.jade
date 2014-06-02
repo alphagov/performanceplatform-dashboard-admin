@@ -11,14 +11,60 @@ block content
       label(for='dashboard_slug') Slug
       input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=true, value=dashboard.slug)
 
-    .form-group
-      label(for='dashboard_title') Title
-      input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
+    .row
+      .form-group.col-md-8
+        label(for='dashboard_title') Title
+        input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
+      div.col-md-4.links
+        fieldset
+          legend Start Page
+          .form-group.row
+            label.col-sm-2.control-label(for='dashboard_start_page_url') URL
+            .col-sm-10
+              input.form-control(name='dashboard_start_page_url', id='dashboard_start_page_url', value=dashboard.relatedPages.transaction.url)
+          .form-group.row
+            label.col-sm-2.control-label(for='dashboard_start_page_title') Title
+            .col-sm-10
+              input.form-control(name='dashboard_start_page_title', id='dashboard_start_page_title', value=dashboard.relatedPages.transaction.title)
+        fieldset
+          legend Related links
+          each link, index in dashboard.relatedPages.other
+            .form-group.row
+              label.col-sm-2.control-label(for='dashboard_link_url') URL
+              .col-sm-10
+                input.form-control(name='dashboard_link_url', id='dashboard_link_url', value=link.url)
+            .form-group.row
+              label.col-sm-2.control-label(for='dashboard_link_title') Title
+              .col-sm-10
+                input.form-control(name='dashboard_link_title', id='dashboard_link_title', value=link.title)
 
     .form-group
       label(for='dashboard_description') Description
       textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
         = dashboard.description
+
+    .form-group
+      label(for='dashboard_department') Department
+      select.form-control(name='dashboard_department', id='dashboard_deptartment')
+        each department in departments
+          option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined))= department.title
+
+    .form-group
+      label(for='dashboard_customer_type') User
+      select.form-control(name='dashboard_customer_type', id='dashboard_customer_type')
+        each customer_type in customer_types
+          option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined))= customer_type
+
+    .form-group
+      label(for='dashboard_business_model') Service costs paid by:
+      select.form-control(name='dashboard_business_model', id='dashboard_business_model')
+        each business_model in business_models
+          option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined))= business_model
+
+    .form-group
+      label(for='dashboard_description_extra') Notes
+      textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
+        = dashboard['description-extra']
 
     .well
       .form-group
