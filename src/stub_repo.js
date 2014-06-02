@@ -32,7 +32,10 @@ StubRepo.prototype.update = function(callback) {
   this._repo.pull('origin', 'master', null, function(err) {
     if (err) console.error(err);
     else {
-      this._updateDashboardsList(callback);
+      this._updateDashboardsList(function(err) {
+        if (err) callback(err);
+        else this._updateClassifications(callback);
+      }.bind(this));
     }
   }.bind(this));
 };
@@ -130,6 +133,33 @@ StubRepo.prototype._updateDashboardsList = function(callback) {
       }.bind(this));
     }
   }.bind(this));
+};
+
+StubRepo.prototype._updateClassifications = function(callback) {
+  this.departments = this.dashboards.reduce(function(departments, dashboard) {
+    if (dashboard.department &&
+        departments.filter(function(d) {
+          return d.title === dashboard.department.title;
+        }).length === 0) {
+      departments.push(dashboard.department);
+    }
+    return departments
+  }, []);
+  this.businessModels = this.dashboards.reduce(function(models, dashboard) {
+    var model = dashboard['business-model'];
+    if (model && models.indexOf(model) < 0) {
+      models.push(model);
+    }
+    return models;
+  }, []);
+  this.customerTypes = this.dashboards.reduce(function(types, dashboard) {
+    var type = dashboard['customer-type'];
+    if (type && types.indexOf(type) < 0) {
+      types.push(type);
+    }
+    return types;
+  }, []);
+  callback();
 };
 
 
