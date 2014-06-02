@@ -12,5 +12,7 @@
        "user": "[USERNAME_HERE]",
        "password": "[USER_TOKEN_HERE]"
     }
+  },
+  "govuk": {
   }
 }
