@@ -20,6 +20,11 @@ block content
       textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
         = dashboard.description
 
+    .well
+      .form-group
+        label(for='commit_message') Edit summary
+        input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 40%;')
+
     button(type='submit', class='btn btn-default') Save
 
   if dashboard.published === false
