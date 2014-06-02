@@ -92,17 +92,22 @@ repo.open(function() {
     dashboard['customer-type'] = req.body.dashboard_customer_type;
     dashboard['business-model'] = req.body.dashboard_business_model;
     dashboard['description-extra'] = req.body.dashboard_description_extra;
-    dashboard.relatedPages.transaction.url = req.body.dashboard_start_page_url;
-    dashboard.relatedPages.transaction.title = req.body.dashboard_start_page_title;
 
-    for (var i = 0; i < req.body.dashboard_link_url.length; i++) {
-      otherLinks.push({
-        url: req.body.dashboard_link_url[i],
-        title: req.body.dashboard_link_title[i]
-      });
+    if (dashboard.relatedPages.dashboard_start_page_url) {
+      dashboard.relatedPages.transaction.url = req.body.dashboard_start_page_url;
+      dashboard.relatedPages.transaction.title = req.body.dashboard_start_page_title;
     }
 
-    dashboard.relatedPages.other = otherLinks;
+    if (dashboard.relatedPages.dashboard_link_url) {
+      for (var i = 0; i < req.body.dashboard_link_url.length; i++) {
+        otherLinks.push({
+          url: req.body.dashboard_link_url[i],
+          title: req.body.dashboard_link_title[i]
+        });
+      }
+
+      dashboard.relatedPages.other = otherLinks;
+    }
 
     dashboard.department = repo.departments.filter(function(d) {
       return d.title === req.body.dashboard_department;

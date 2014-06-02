@@ -16,27 +16,30 @@ block content
         label(for='dashboard_title') Title
         input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
       div.col-md-4.links
-        fieldset
-          legend Start Page
-          .form-group.row
-            label.col-sm-2.control-label(for='dashboard_start_page_url') URL
-            .col-sm-10
-              input.form-control(name='dashboard_start_page_url', id='dashboard_start_page_url', value=dashboard.relatedPages.transaction.url)
-          .form-group.row
-            label.col-sm-2.control-label(for='dashboard_start_page_title') Title
-            .col-sm-10
-              input.form-control(name='dashboard_start_page_title', id='dashboard_start_page_title', value=dashboard.relatedPages.transaction.title)
-        fieldset
-          legend Related links
-          each link, index in dashboard.relatedPages.other
-            .form-group.row
-              label.col-sm-2.control-label(for='dashboard_link_url') URL
-              .col-sm-10
-                input.form-control(name='dashboard_link_url', id='dashboard_link_url', value=link.url)
-            .form-group.row
-              label.col-sm-2.control-label(for='dashboard_link_title') Title
-              .col-sm-10
-                input.form-control(name='dashboard_link_title', id='dashboard_link_title', value=link.title)
+        if dashboard.relatedPages
+          if dashboard.relatedPages.transaction
+            fieldset
+              legend Start Page
+              .form-group.row
+                label.col-sm-2.control-label(for='dashboard_start_page_url') URL
+                .col-sm-10
+                  input.form-control(name='dashboard_start_page_url', id='dashboard_start_page_url', value=dashboard.relatedPages.transaction.url)
+              .form-group.row
+                label.col-sm-2.control-label(for='dashboard_start_page_title') Title
+                .col-sm-10
+                  input.form-control(name='dashboard_start_page_title', id='dashboard_start_page_title', value=dashboard.relatedPages.transaction.title)
+          if dashboard.relatedPages.other
+            fieldset
+              legend Related links
+              each link, index in dashboard.relatedPages.other
+                .form-group.row
+                  label.col-sm-2.control-label(for='dashboard_link_url') URL
+                  .col-sm-10
+                    input.form-control(name='dashboard_link_url', id='dashboard_link_url', value=link.url)
+                .form-group.row
+                  label.col-sm-2.control-label(for='dashboard_link_title') Title
+                  .col-sm-10
+                    input.form-control(name='dashboard_link_title', id='dashboard_link_title', value=link.title)
 
     .form-group
       label(for='dashboard_description') Description
