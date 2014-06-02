@@ -4,13 +4,6 @@ block header
   title Performance Platform dashboard admin
 
 block content
-  if errors.length > 0
-    #info.alert.alert-danger
-      != errors
-  if messages.length > 0
-    #info.alert.alert-success
-      != messages
-
   #add-dashboard
     a(href='/dashboard/new', class='btn btn-success') Add a new dashboard
 

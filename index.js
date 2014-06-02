@@ -15,8 +15,9 @@ var StubRepo = require('./src/stub_repo'),
 var app = express(),
     repo = StubRepo.fromConfig(config.stub),
     jenkins = Jenkins.fromConfig(config.jenkins),
-    gitConfig = new GitConfig(),
-    govuk = GovUK.fromConfig(config.govuk);
+    gitConfig = new GitConfig()
+    govuk = GovUK.fromConfig(config.govuk),
+    tmpDashboardStore = {};
 
 repo.open(function() {
 
@@ -116,7 +117,7 @@ repo.open(function() {
 
     var newDashboard = createDashboard(dashboard, req.body);
 
-    saveRepo(newDashboard, req.body.commit_message, req, res);
+    saveRepo(true, newDashboard, req.body.commit_message, req, res);
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
@@ -130,12 +131,25 @@ repo.open(function() {
     });
   });
 
+  app.get(/\/dashboard\/(.+)\/rescue/, function(req, res) {
+    var rescued = tmpDashboardStore[req.params[0]];
+    res.render(rescued.isNew ? 'create' : 'edit', {
+      "action": rescued.isNew ? '/dashboard/create' : '/dashboard/' + rescued.dashboard.slug + '/edit',
+      "dashboard": rescued.dashboard,
+      "departments": repo.departments,
+      "customer_types": repo.customerTypes,
+      "business_models": repo.businessModels,
+      "isNew": rescued.isNew,
+      "errors": req.flash('error')
+    });
+  });
+
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
 
     var newDashboard = createDashboard(dashboard, req.body);
 
-    saveRepo(newDashboard, req.body.commit_message, req, res);
+    saveRepo(false, newDashboard, req.body.commit_message, req, res);
   });
 
   function createDashboard (existingDashboard, form) {
@@ -181,23 +195,30 @@ repo.open(function() {
 
     dashboard.published = true;
 
-    saveRepo(dashboard, 'Publish \'' + dashboard.title + '\' dashboard', req, res);
+    saveRepo(false, dashboard, 'Publish \'' + dashboard.title + '\' dashboard', req, res);
   });
 
   function sanitiseCommitMessage (commitMessage) {
     return commitMessage.replace(/"/g, '\'');
   }
 
-  function saveRepo (dashboard, commitMessage, req, res) {
-    repo.save(dashboard, sanitiseCommitMessage(commitMessage), function (err) {
+  function saveRepo (isNew, dashboard, commitMessage, req, res) {
+    var tmpId = '' + Date.now() + Math.round(Math.random() * 100000),
+        redirectUrl = '/dashboard/' + tmpId + '/rescue';
+
+    tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: dashboard };
+
+    repo.save(isNew, dashboard, sanitiseCommitMessage(commitMessage), function (err) {
       if (err) {
-        console.error(err);
+        console.error('lerigherag', err);
+        req.flash('error', err);
+        res.redirect(redirectUrl);
       } else {
         jenkins.deploy(function (err) {
           if (err) {
             console.error(err);
             req.flash('error', err.message + ' Your changes have been made and are safe.');
-            res.redirect('/');
+            res.redirect(redirectUrl);
           } else {
             var updateMessage = [
               'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',

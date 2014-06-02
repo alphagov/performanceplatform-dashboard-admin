@@ -23,4 +23,12 @@ html(lang="en")
           a(href='https://secure.gravatar.com/', target='_blank')
             img(src='http://www.gravatar.com/avatar/#{settings.committer.emailHash}?size=140', height='20', width='20', title=settings.committer.email, id='gravatar')
     .container
+      if errors && errors.length > 0
+        p elrguihelqiguhq34ltuhq4tlhqtliu3hq4tliq3uht
+        #info.alert.alert-danger
+          != errors
+      if messages && messages.length > 0
+        #info.alert.alert-success
+          != messages
+
       block content

@@ -37,30 +37,36 @@ StubRepo.prototype.update = function(callback) {
   }.bind(this));
 };
 
-StubRepo.prototype.save = function(dashboard, commitMessage, callback) {
+StubRepo.prototype.save = function(isNew, dashboard, commitMessage, callback) {
   var repoPath = require('path').join('dashboards', dashboard.slug + '.json'),
       dashboardPath = require('path').join(this.path, repoPath),
       dashboardJSON = JSON.stringify(dashboard, null, '  ') + "\n";
 
-  var gitActions = [
-    fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
-    this._repo.add.bind(this._repo, [repoPath]),
-    this._repo.commit.bind(this._repo, commitMessage),
-    this.updateDashboards.bind(this)
-  ];
+  fs.exists(dashboardPath, function(exists) {
 
-  if (this.development) {
-    console.log('Not pushing config changes while in development.');
-  } else {
-    gitActions.push(this._repo.push.bind(this._repo, 'origin', 'master', null));
-  }
+    if (exists && isNew) callback("A dashboard with the slug '" + dashboard.slug + "' already exists");
+    else {
+      var gitActions = [
+        fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
+        this._repo.add.bind(this._repo, [repoPath]),
+        this._repo.commit.bind(this._repo, commitMessage),
+        this.updateDashboards.bind(this)
+      ];
 
-  async.series(
-    gitActions,
-    function (err, results) {
-      callback(err);
+      if (this.development) {
+        console.log('Not pushing config changes while in development.');
+      } else {
+        gitActions.push(this._repo.push.bind(this._repo, 'origin', 'master', null));
+      }
+
+      async.series(
+        gitActions,
+        function (err, results) {
+          callback(err);
+        }
+      );
     }
-  );
+  }.bind(this));
 };
 
 StubRepo.prototype.selectDashboard = function (slug) {
