@@ -32,10 +32,7 @@ StubRepo.prototype.update = function(callback) {
   this._repo.pull('origin', 'master', null, function(err) {
     if (err) console.error(err);
     else {
-      this._updateDashboardsList(function(err) {
-        if (err) callback(err);
-        else this._updateClassifications(callback);
-      }.bind(this));
+      this.updateDashboards(callback);
     }
   }.bind(this));
 };
@@ -48,7 +45,8 @@ StubRepo.prototype.save = function(dashboard, commitMessage, callback) {
   var gitActions = [
     fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
     this._repo.add.bind(this._repo, [repoPath]),
-    this._repo.commit.bind(this._repo, commitMessage)
+    this._repo.commit.bind(this._repo, commitMessage),
+    this.updateDashboards.bind(this)
   ];
 
   if (this.development) {
@@ -112,6 +110,16 @@ StubRepo.prototype.validate = function(dashboard) {
                              }, [])
     }
   });
+};
+
+StubRepo.prototype.updateDashboards = function (callback) {
+  this._updateDashboardsList(function (err) {
+    if (err) {
+      callback(err);
+    } else {
+      this._updateClassifications(callback);
+    }
+  }.bind(this));
 };
 
 StubRepo.prototype._repoOpened = function(callback, repo) {
