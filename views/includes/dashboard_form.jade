@@ -2,6 +2,8 @@ form(method='post', action=action)
   .form-group
     label(for='dashboard_slug') Slug
     input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=((dashboard.slug) ? 'true' : undefined), value=dashboard.slug, pattern='[-a-z]+', required)
+    if dashboard.slug
+      input(type='hidden', name='dashboard_slug', value=dashboard.slug)
   .row
     .form-group.col-md-8
       label(for='dashboard_title') Title

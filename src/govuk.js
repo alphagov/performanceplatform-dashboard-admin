@@ -15,16 +15,18 @@ GovUK.prototype.fromStartPage = function(url, callback) {
       callback(null, {
         title: json.title,
         description: json.details.description,
-        start_page: {
-          url: url,
-          title: json.title
-        },
-        links: json.related.map(function(link) {
-          return {
-            url: link.web_url,
-            title: link.title
-          };
-        })
+        relatedPages: {
+          transaction: {
+            url: url,
+            title: json.title
+          },
+          other: json.related.map(function(link) {
+            return {
+              url: link.web_url,
+              title: link.title
+            };
+          })
+        }
       });
     }
   });
