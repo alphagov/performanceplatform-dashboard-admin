@@ -173,10 +173,17 @@ repo.open(function() {
     }
 
     if (form.dashboard_link_url) {
-      for (var i = 0; i < form.dashboard_link_url.length; i++) {
+      if (_.isArray(form.dashboard_link_url)) {
+        for (var i = 0; i < form.dashboard_link_url.length; i++) {
+          otherLinks.push({
+            url: form.dashboard_link_url[i],
+            title: form.dashboard_link_title[i]
+          });
+        }
+      } else {
         otherLinks.push({
-          url: form.dashboard_link_url[i],
-          title: form.dashboard_link_title[i]
+          url: form.dashboard_link_url,
+          title: form.dashboard_link_title
         });
       }
 
