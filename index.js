@@ -56,6 +56,23 @@ repo.open(function() {
     });
   });
 
+  app.get('/dashboard/new', function (req, res) {
+    res.render('add', {
+      'errors': req.flash('error')
+    });
+  });
+
+  app.get('/dashboard/create', function (req, res) {
+    var govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
+
+    if (govUKStartPage && govUKStartPage.substring(0, 19) !== 'https://www.gov.uk/') {
+      req.flash('error', 'The start page URL you provided doesn\'t begin with https://www.gov.uk/');
+      res.redirect('/dashboard/new');
+    } else {
+      res.render('create', {});
+    }
+  });
+
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
     res.render('edit', {

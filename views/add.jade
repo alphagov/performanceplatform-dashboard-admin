@@ -1,0 +1,34 @@
+extends layout
+
+block header
+  title Add a new dashboard - Performance Platform dashboard admin
+
+block content
+  if errors.length > 0
+    #info.alert.alert-danger
+      != errors
+
+  h1 Add a new dashboard
+
+  p
+    | We need the GOV.UK start page for the transaction you want to measure.
+    | This lets us import metadata about the transaction from GOV.UK.
+
+  p
+    | A GOV.UK start page is one with a green 'Start now' button, like&nbsp;
+    a(href='https://www.gov.uk/apply-carers-allowance', target='_blank')
+      | Apply for Carer's Allowance
+    | . It must begin with&nbsp;
+    code https://www.gov.uk/
+    | .
+
+  form(method='get', action='/dashboard/create')
+    .form-group
+      label(for='govuk-url') GOV.UK transaction start page
+      input(type='url', name='govuk-url', id='govuk-url', class='form-control', placeholder='https://www.gov.uk/apply-carers-allowance', pattern='^https://www.gov.uk/[-a-zA-Z]+$')
+
+    button(type='submit', class='btn btn-success') Import metadata from GOV.UK
+
+  hr
+
+  a(href='/dashboard/create', class='btn btn-sm btn-info') I don't have a GOV.UK start page
