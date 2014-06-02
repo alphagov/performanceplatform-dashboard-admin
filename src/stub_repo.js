@@ -3,10 +3,11 @@ var async = require('async'),
     glob = require('glob'),
     fs = require('fs');
 
-function StubRepo(path, remote, json_glob) {
+function StubRepo(path, remote, json_glob, development) {
   this.path = path;
   this.remote = remote;
   this.json_glob = json_glob;
+  this.development = development;
 
   this.dashboards = [];
 }
@@ -39,15 +40,24 @@ StubRepo.prototype.save = function(dashboard, commitMessage, callback) {
       dashboardPath = require('path').join(this.path, repoPath),
       dashboardJSON = JSON.stringify(dashboard, null, '  ') + "\n";
 
-  async.series([
-      fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
-      this._repo.add.bind(this._repo, [repoPath]),
-      this._repo.commit.bind(this._repo, commitMessage),
-      this._repo.push.bind(this._repo, 'origin', 'master', null)
-  ],
-  function (err, results) {
-    callback(err);
-  });
+  var gitActions = [
+    fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
+    this._repo.add.bind(this._repo, [repoPath]),
+    this._repo.commit.bind(this._repo, commitMessage)
+  ];
+
+  if (this.development) {
+    console.log('Not pushing config changes while in development.');
+  } else {
+    gitActions.push(this._repo.push.bind(this._repo, 'origin', 'master', null));
+  }
+
+  async.series(
+    gitActions,
+    function (err, results) {
+      callback(err);
+    }
+  );
 };
 
 StubRepo.prototype.selectDashboard = function (slug) {
@@ -80,7 +90,7 @@ StubRepo.prototype._updateDashboardsList = function(callback) {
 
 
 StubRepo.fromConfig = function(config) {
-  return new StubRepo(config.path, config.remote, config.json_glob);
+  return new StubRepo(config.path, config.remote, config.json_glob, config.development);
 };
 
 module.exports = StubRepo;
