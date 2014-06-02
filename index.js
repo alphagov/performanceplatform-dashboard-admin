@@ -15,7 +15,7 @@ var StubRepo = require('./src/stub_repo'),
 var app = express(),
     repo = StubRepo.fromConfig(config.stub),
     jenkins = Jenkins.fromConfig(config.jenkins),
-    gitConfig = new GitConfig()
+    gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk);
 
 repo.open(function() {
@@ -68,9 +68,11 @@ repo.open(function() {
   app.get('/dashboard/create', function (req, res) {
     var dashboard = {
           'department': {}
-        }, govUKStartPage;
+        },
+        govUKStartPage;
+
     if (req.query['govuk-url']) {
-      var govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
+      govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
     }
 
     if (govUKStartPage && govUKStartPage.substring(0, 19) !== 'https://www.gov.uk/') {
@@ -86,9 +88,9 @@ repo.open(function() {
           res.render('create', {
             'action': '/dashboard/create',
             'dashboard': dashboard,
-            'departments': repo.departments,
-            'customer_types': repo.customerTypes,
-            'business_models': repo.businessModels
+            'departments': [''].concat(repo.departments),
+            'customer_types': [''].concat(repo.customerTypes),
+            'business_models': [''].concat(repo.businessModels)
           });
         }
       });
@@ -96,9 +98,9 @@ repo.open(function() {
       res.render('create', {
         'action': '/dashboard/create',
         'dashboard': dashboard,
-        'departments': repo.departments,
-        'customer_types': repo.customerTypes,
-        'business_models': repo.businessModels
+        'departments': [''].concat(repo.departments),
+        'customer_types': [''].concat(repo.customerTypes),
+        'business_models': [''].concat(repo.businessModels)
       });
     }
   });

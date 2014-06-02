@@ -41,21 +41,24 @@ form(method='post', action=action)
 
   .form-group
     label(for='dashboard_department') Department
-    select.form-control(name='dashboard_department', id='dashboard_deptartment')
+    select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
       each department in departments
-        option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined))= department.title
+        option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
+          = department.title
 
   .form-group
     label(for='dashboard_customer_type') User
-    select.form-control(name='dashboard_customer_type', id='dashboard_customer_type')
+    select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
       each customer_type in customer_types
-        option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined))= customer_type
+        option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type)
+          = customer_type
 
   .form-group
     label(for='dashboard_business_model') Service costs paid by:
-    select.form-control(name='dashboard_business_model', id='dashboard_business_model')
+    select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
       each business_model in business_models
-        option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined))= business_model
+        option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined), value=business_model)
+          = business_model
 
   .form-group
     label(for='dashboard_description_extra') Notes
