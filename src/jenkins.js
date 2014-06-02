@@ -24,10 +24,19 @@ Jenkins.prototype.deploy = function(callback) {
       })
     }
   }, function(err, response, body) {
-    if (response.statusCode < 200 ||
-        response.statusCode >= 300) callback(body);
-    else {
-      callback(null);
+    if (err) {
+      var errorMessage = 'Error deploying configuration using Jenkins.';
+      console.error(errorMessage);
+      callback({
+        'status': 'error',
+        'message': errorMessage
+      });
+    } else {
+      if (response.statusCode < 200 ||
+          response.statusCode >= 300) callback(body);
+      else {
+        callback(null);
+      }
     }
   });
 

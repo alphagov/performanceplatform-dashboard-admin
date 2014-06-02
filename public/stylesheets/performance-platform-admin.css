@@ -3,11 +3,24 @@
 }
 
 .navbar-inverse .navbar-brand:hover {
-  color: #ccc;
+  color: #bfc1c3; /* $grey-2 */
 }
 
 #header-crown {
   margin: -6px 10px 0 0;
+}
+
+#prototype {
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  padding: 0 5px;
+}
+
+#gravatar {
+  border-radius: 3px;
+  margin-left: 5px;
 }
 
 form {
@@ -19,10 +32,10 @@ form.publish .btn {
 }
 
 .draft {
-  background: #f00;
+  background: #f47738; /* $orange */
   color: #fff;
   margin-left: 6px;
-  padding: 2px;
+  padding: 4px 8px;
 }
 
 #dashboards {
