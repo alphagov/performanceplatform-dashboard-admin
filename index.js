@@ -63,19 +63,43 @@ repo.open(function() {
   });
 
   app.get('/dashboard/create', function (req, res) {
-    var govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
+    if (req.query['govuk-url']) {
+      var govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
+    }
 
     if (govUKStartPage && govUKStartPage.substring(0, 19) !== 'https://www.gov.uk/') {
       req.flash('error', 'The start page URL you provided doesn\'t begin with https://www.gov.uk/');
       res.redirect('/dashboard/new');
     } else {
-      res.render('create', {});
+      res.render('create', {
+        'action': '/dashboard/create',
+        'dashboard': {
+          'department': {}
+        },
+        'departments': repo.departments,
+        'customer_types': repo.customerTypes,
+        'business_models': repo.businessModels
+      });
     }
+  });
+
+  app.post('/dashboard/create', function (req, res) {
+    var dashboard = {
+      'published': false,
+      'page-type': 'dashboard',
+      'dashboard-type': 'transaction',
+      'strapline': 'Dashboard'
+    };
+
+    var newDashboard = createDashboard(dashboard, req.body);
+
+    saveRepo(newDashboard, req.body.commit_message, req, res);
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
     res.render('edit', {
+      "action": '/dashboard/' + dashboard.slug + '/edit',
       "dashboard": dashboard,
       "departments": repo.departments,
       "customer_types": repo.customerTypes,
@@ -84,37 +108,48 @@ repo.open(function() {
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]),
-        otherLinks = [];
+    var dashboard = repo.selectDashboard(req.params[0]);
 
-    dashboard.title = req.body.dashboard_title;
-    dashboard.description = req.body.dashboard_description;
-    dashboard['customer-type'] = req.body.dashboard_customer_type;
-    dashboard['business-model'] = req.body.dashboard_business_model;
-    dashboard['description-extra'] = req.body.dashboard_description_extra;
+    var newDashboard = createDashboard(dashboard, req.body);
 
-    if (dashboard.relatedPages.dashboard_start_page_url) {
-      dashboard.relatedPages.transaction.url = req.body.dashboard_start_page_url;
-      dashboard.relatedPages.transaction.title = req.body.dashboard_start_page_title;
+    saveRepo(newDashboard, req.body.commit_message, req, res);
+  });
+
+  function createDashboard (existingDashboard, form) {
+    var otherLinks = [];
+
+    if (!existingDashboard.slug) {
+      existingDashboard.slug = form.dashboard_slug;
     }
 
-    if (dashboard.relatedPages.dashboard_link_url) {
-      for (var i = 0; i < req.body.dashboard_link_url.length; i++) {
+    existingDashboard.title = form.dashboard_title;
+    existingDashboard.description = form.dashboard_description;
+    existingDashboard['customer-type'] = form.dashboard_customer_type;
+    existingDashboard['business-model'] = form.dashboard_business_model;
+    existingDashboard['description-extra'] = form.dashboard_description_extra;
+
+    if (form.dashboard_start_page_url) {
+      existingDashboard.relatedPages.transaction.url = form.dashboard_start_page_url;
+      existingDashboard.relatedPages.transaction.title = form.dashboard_start_page_title;
+    }
+
+    if (form.dashboard_link_url) {
+      for (var i = 0; i < form.dashboard_link_url.length; i++) {
         otherLinks.push({
-          url: req.body.dashboard_link_url[i],
-          title: req.body.dashboard_link_title[i]
+          url: form.dashboard_link_url[i],
+          title: form.dashboard_link_title[i]
         });
       }
 
-      dashboard.relatedPages.other = otherLinks;
+      existingDashboard.relatedPages.other = otherLinks;
     }
 
-    dashboard.department = repo.departments.filter(function(d) {
-      return d.title === req.body.dashboard_department;
+    existingDashboard.department = repo.departments.filter(function(d) {
+      return d.title === form.dashboard_department;
     })[0];
 
-    saveRepo(dashboard, req.body.commit_message, req, res);
-  });
+    return existingDashboard;
+  }
 
   app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
