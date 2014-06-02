@@ -3,17 +3,20 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
-    flash = require('connect-flash');
+    flash = require('connect-flash'),
+    _ = require('lodash');
 
 var StubRepo = require('./src/stub_repo'),
     Jenkins = require('./src/jenkins'),
     Dashboards = require('./src/dashboards'),
-    GitConfig = require('./src/git_config');
+    GitConfig = require('./src/git_config'),
+    GovUK = require('./src/govuk.js');
 
 var app = express(),
     repo = StubRepo.fromConfig(config.stub),
     jenkins = Jenkins.fromConfig(config.jenkins),
-    gitConfig = new GitConfig();
+    gitConfig = new GitConfig()
+    govuk = GovUK.fromConfig(config.govuk);
 
 repo.open(function() {
 
@@ -63,6 +66,9 @@ repo.open(function() {
   });
 
   app.get('/dashboard/create', function (req, res) {
+    var dashboard = {
+          'department': {}
+        }, govUKStartPage;
     if (req.query['govuk-url']) {
       var govUKStartPage = req.query['govuk-url'].trim().toLowerCase();
     }
@@ -70,12 +76,26 @@ repo.open(function() {
     if (govUKStartPage && govUKStartPage.substring(0, 19) !== 'https://www.gov.uk/') {
       req.flash('error', 'The start page URL you provided doesn\'t begin with https://www.gov.uk/');
       res.redirect('/dashboard/new');
+    } else if (govUKStartPage) {
+      govuk.fromStartPage(govUKStartPage, function(err, json) {
+        if (err) {
+          req.flash('error', 'Could not find the start page ' + govUKStartPage);
+          res.redirect('/dashboard/new');
+        } else {
+          dashboard = _.merge(dashboard, json, { slug: govUKStartPage.substring(19) });
+          res.render('create', {
+            'action': '/dashboard/create',
+            'dashboard': dashboard,
+            'departments': repo.departments,
+            'customer_types': repo.customerTypes,
+            'business_models': repo.businessModels
+          });
+        }
+      });
     } else {
       res.render('create', {
         'action': '/dashboard/create',
-        'dashboard': {
-          'department': {}
-        },
+        'dashboard': dashboard,
         'departments': repo.departments,
         'customer_types': repo.customerTypes,
         'business_models': repo.businessModels
@@ -88,7 +108,8 @@ repo.open(function() {
       'published': false,
       'page-type': 'dashboard',
       'dashboard-type': 'transaction',
-      'strapline': 'Dashboard'
+      'strapline': 'Dashboard',
+      'relatedPages': {}
     };
 
     var newDashboard = createDashboard(dashboard, req.body);
@@ -129,8 +150,10 @@ repo.open(function() {
     existingDashboard['description-extra'] = form.dashboard_description_extra;
 
     if (form.dashboard_start_page_url) {
-      existingDashboard.relatedPages.transaction.url = form.dashboard_start_page_url;
-      existingDashboard.relatedPages.transaction.title = form.dashboard_start_page_title;
+      existingDashboard.relatedPages.transaction = {
+        url: form.dashboard_start_page_url,
+        title: form.dashboard_start_page_title
+      };
     }
 
     if (form.dashboard_link_url) {
