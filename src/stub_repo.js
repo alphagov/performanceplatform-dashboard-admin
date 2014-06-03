@@ -104,7 +104,11 @@ StubRepo.prototype.validate = function(dashboard) {
     return results;
   }
 
-  moduleResults = _.flatten(dashboard.modules.map(validateModule));
+  if (dashboard.modules && dashboard.modules.length > 0) {
+    moduleResults = _.flatten(dashboard.modules.map(validateModule));
+  } else {
+    moduleResults = [];
+  }
 
   moduleResults.unshift(dashboardResult);
 
@@ -154,30 +158,35 @@ StubRepo.prototype._updateDashboardsList = function(callback) {
 };
 
 StubRepo.prototype._updateClassifications = function(callback) {
-  this.departments = this.dashboards.reduce(function(departments, dashboard) {
-    if (dashboard.department &&
-        departments.filter(function(d) {
-          return d.title === dashboard.department.title;
-        }).length === 0) {
-      departments.push(dashboard.department);
+  async.map([
+    require('path').join(this.path, 'departments.json'),
+    require('path').join(this.path, 'business-models.json'),
+    require('path').join(this.path, 'customer-types.json')
+  ], fs.readFile,
+  function(err, content) {
+    if (err) callback(err);
+    else {
+      var json = content.map(JSON.parse);
+
+      this.departments = Object.keys(json[0]).map(function(id) {
+        var obj = json[0][id];
+        obj.id = id;
+        return obj;
+      });
+      this.businessModels = Object.keys(json[1]).map(function(id) {
+        var obj = json[1][id];
+        obj.id = id;
+        return obj;
+      });
+      this.customerTypes = Object.keys(json[2]).map(function(id) {
+        var obj = json[2][id];
+        obj.id = id;
+        return obj;
+      });
+
+      callback();
     }
-    return departments
-  }, []);
-  this.businessModels = this.dashboards.reduce(function(models, dashboard) {
-    var model = dashboard['business-model'];
-    if (model && models.indexOf(model) < 0) {
-      models.push(model);
-    }
-    return models;
-  }, []);
-  this.customerTypes = this.dashboards.reduce(function(types, dashboard) {
-    var type = dashboard['customer-type'];
-    if (type && types.indexOf(type) < 0) {
-      types.push(type);
-    }
-    return types;
-  }, []);
-  callback();
+  }.bind(this));
 };
 
 
