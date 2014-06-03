@@ -190,9 +190,7 @@ repo.open(function() {
       existingDashboard.relatedPages.other = otherLinks;
     }
 
-    existingDashboard.department = repo.departments.filter(function(d) {
-      return d.title === form.dashboard_department;
-    })[0];
+    existingDashboard.department = form.dashboard_department;
 
     return existingDashboard;
   }

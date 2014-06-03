@@ -21,23 +21,23 @@ form(method='post', action=action)
           label(for='dashboard_department') Department
           select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
             each department in departments
-              option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
+              option(selected=((department.id === dashboard.department) ? 'selected' : undefined), value=department.id)
                 = department.title
 
       .form-group
         label(for='dashboard_customer_type') User
         select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
           each customer_type in customer_types
-            option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type)
+            option(selected=((customer_type.id === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type.id)
               = customer_type
 
       .form-group
         label(for='dashboard_business_model') Service costs paid by:
         select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
           each business_model in business_models
-            option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined), value=business_model)
+            option(selected=((business_model.id === dashboard['business-model']) ? 'selected' : undefined), value=business_model.id)
               = business_model
-
+      
       .form-group
         label(for='dashboard_description_extra') Notes
         textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
