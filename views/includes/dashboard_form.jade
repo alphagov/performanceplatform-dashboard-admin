@@ -1,74 +1,75 @@
 form(method='post', action=action)
-  .form-group
-    label(for='dashboard_slug') Slug
-    input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=((dashboard.slug && !isNew) ? 'true' : undefined), value=dashboard.slug, pattern='[-a-z]+', required)
-    if dashboard.slug && !isNew
-      input(type='hidden', name='dashboard_slug', value=dashboard.slug)
   .row
-    .form-group.col-md-8
-      label(for='dashboard_title') Title
-      input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
-    div.col-md-4.links
+    .col-md-8
+      .form-group
+        label(for='dashboard_slug') Slug
+        input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=((dashboard.slug && !isNew) ? 'true' : undefined), value=dashboard.slug, pattern='[-a-z]+', required)
+        if dashboard.slug && !isNew
+          input(type='hidden', name='dashboard_slug', value=dashboard.slug)
+
+      .form-group
+        label(for='dashboard_title') Title
+        input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
+
+      .form-group
+        label(for='dashboard_description') Description
+        textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
+          = dashboard.description
+
+      if dashboard.department
+        .form-group
+          label(for='dashboard_department') Department
+          select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
+            each department in departments
+              option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
+                = department.title
+
+      .form-group
+        label(for='dashboard_customer_type') User
+        select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
+          each customer_type in customer_types
+            option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type)
+              = customer_type
+
+      .form-group
+        label(for='dashboard_business_model') Service costs paid by:
+        select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
+          each business_model in business_models
+            option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined), value=business_model)
+              = business_model
+
+      .form-group
+        label(for='dashboard_description_extra') Notes
+        textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
+          = dashboard['description-extra']
+
+    .col-md-4#links
       if dashboard.relatedPages
         if dashboard.relatedPages.transaction
           fieldset
-            legend Start Page
-            .form-group.row
-              label.col-sm-2.control-label(for='dashboard_start_page_url') URL
-              .col-sm-10
-                input.form-control(name='dashboard_start_page_url', id='dashboard_start_page_url', value=dashboard.relatedPages.transaction.url)
-            .form-group.row
-              label.col-sm-2.control-label(for='dashboard_start_page_title') Title
-              .col-sm-10
-                input.form-control(name='dashboard_start_page_title', id='dashboard_start_page_title', value=dashboard.relatedPages.transaction.title)
+            legend Start page
+            +link-row('URL', 'dashboard_start_page_url', dashboard.relatedPages.transaction.url)
+            +link-row('Title', 'dashboard_start_page_title', dashboard.relatedPages.transaction.title)
         if dashboard.relatedPages.other
           fieldset
             legend Related links
             each link, index in dashboard.relatedPages.other
-              .form-group.row
-                label.col-sm-2.control-label(for='dashboard_link_url') URL
-                .col-sm-10
-                  input.form-control(name='dashboard_link_url', id='dashboard_link_url', value=link.url)
-              .form-group.row
-                label.col-sm-2.control-label(for='dashboard_link_title') Title
-                .col-sm-10
-                  input.form-control(name='dashboard_link_title', id='dashboard_link_title', value=link.title)
+              +link-row('URL', 'dashboard_link_url', link.url)
+              +link-row('Title', 'dashboard_link_title', link.title)
 
-  .form-group
-    label(for='dashboard_description') Description
-    textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
-      = dashboard.description
-
-  if dashboard.department
-    .form-group
-      label(for='dashboard_department') Department
-      select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
-        each department in departments
-          option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
-            = department.title
-
-  .form-group
-    label(for='dashboard_customer_type') User
-    select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
-      each customer_type in customer_types
-        option(selected=((customer_type === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type)
-          = customer_type
-
-  .form-group
-    label(for='dashboard_business_model') Service costs paid by:
-    select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
-      each business_model in business_models
-        option(selected=((business_model === dashboard['business-model']) ? 'selected' : undefined), value=business_model)
-          = business_model
-
-  .form-group
-    label(for='dashboard_description_extra') Notes
-    textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
-      = dashboard['description-extra']
-
-  .well
+  .row.well
     .form-group
       label(for='commit_message') Edit summary
-      input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 40%;')
+      input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 60%;')
 
     button(type='submit', class='btn btn-success') Save changes
+
+  .clearfix
+
+//- Link mixin
+mixin link-row(type, form_element_identifier, value)
+  .form-group.row
+    .col-sm-2
+      label.control-label.input-sm(for=form_element_identifier)= type
+    .col-sm-10
+      input.form-control.input-sm(name=form_element_identifier, id=form_element_identifier, value=value)
