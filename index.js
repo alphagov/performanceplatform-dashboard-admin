@@ -217,7 +217,6 @@ repo.open(function() {
 
     repo.save(isNew, dashboard, sanitiseCommitMessage(commitMessage), function (err) {
       if (err) {
-        console.error(err);
         req.flash('error', err.message ? err.message : err);
         res.redirect(redirectUrl);
       } else {
