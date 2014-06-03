@@ -178,8 +178,8 @@ StubRepo.prototype._updateClassifications = function(callback) {
 
 
 
-StubRepo.fromConfig = function(config) {
-  return new StubRepo(config.path, config.remote, config.json_glob, config.development);
+StubRepo.fromConfig = function(config, development) {
+  return new StubRepo(config.path, config.remote, config.json_glob, development);
 };
 
 module.exports = StubRepo;
