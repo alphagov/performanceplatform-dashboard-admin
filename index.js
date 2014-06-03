@@ -68,7 +68,7 @@ repo.open(function() {
 
   app.get('/dashboard/create', function (req, res) {
     var dashboard = {
-          'department': {}
+          'relatedPages': {}
         },
         govUKStartPage;
 
@@ -89,9 +89,9 @@ repo.open(function() {
           res.render('create', {
             'action': '/dashboard/create',
             'dashboard': dashboard,
-            'departments': [''].concat(repo.departments),
-            'customer_types': [''].concat(repo.customerTypes),
-            'business_models': [''].concat(repo.businessModels)
+            'departments': repo.departments,
+            'customer_types': repo.customerTypes,
+            'business_models': repo.businessModels
           });
         }
       });
@@ -99,9 +99,9 @@ repo.open(function() {
       res.render('create', {
         'action': '/dashboard/create',
         'dashboard': dashboard,
-        'departments': [''].concat(repo.departments),
-        'customer_types': [''].concat(repo.customerTypes),
-        'business_models': [''].concat(repo.businessModels)
+        'departments': repo.departments,
+        'customer_types': repo.customerTypes,
+        'business_models': repo.businessModels
       });
     }
   });

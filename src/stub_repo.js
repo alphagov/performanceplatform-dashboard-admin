@@ -174,13 +174,17 @@ StubRepo.prototype._updateClassifications = function(callback) {
         return obj;
       });
       this.businessModels = Object.keys(json[1]).map(function(id) {
-        var obj = json[1][id];
-        obj.id = id;
+        var obj = {
+          id: id,
+          title: json[1][id]
+        };
         return obj;
       });
       this.customerTypes = Object.keys(json[2]).map(function(id) {
-        var obj = json[2][id];
-        obj.id = id;
+        var obj = {
+          id: id,
+          title: json[2][id]
+        };
         return obj;
       });
 

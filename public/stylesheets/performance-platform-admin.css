@@ -35,10 +35,6 @@ h1 {
   font-size: 3em;
 }
 
-body > .container p {
-  font-size: 1.6em;
-}
-
 form {
   display: inline;
 }
@@ -91,6 +87,30 @@ abbr.dept {
   right: 0;
 }
 
+#links {
+  margin-bottom: 1em;
+}
+
 #links legend {
   font-size: 1em;
+}
+
+#links .btn.btn-default {
+  margin-bottom: 2em;
+}
+
+.link {
+  margin-bottom: 2em;
+}
+
+.remove-link {
+  float: right;
+  margin-top: -3em;
+  position: relative;
+  top: 3em;
+  z-index: 99;
+}
+
+#save-changes h2 {
+  margin-top: 0;
 }

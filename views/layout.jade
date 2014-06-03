@@ -5,6 +5,7 @@ html(lang="en")
     link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
     link(rel='stylesheet', href='/stylesheets/performance-platform-admin.css')
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     block header
   body
     .navbar.navbar-inverse
@@ -23,6 +24,12 @@ html(lang="en")
           a(href='https://secure.gravatar.com/', target='_blank')
             img(src='http://www.gravatar.com/avatar/#{settings.committer.emailHash}?size=140', height='20', width='20', title=settings.committer.email, id='gravatar')
     .container
+      noscript
+        .alert.alert-danger
+          p
+            | This is a prototype. Some parts of the application require JavaScript to function properly,
+            | so you may need to enable it.
+
       if errors && errors.length > 0
         #info.alert.alert-danger
           != errors
