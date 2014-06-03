@@ -35,10 +35,6 @@ h1 {
   font-size: 3em;
 }
 
-body > .container p {
-  font-size: 1.6em;
-}
-
 form {
   display: inline;
 }
@@ -113,4 +109,8 @@ abbr.dept {
   position: relative;
   top: 3em;
   z-index: 99;
+}
+
+#save-changes h2 {
+  margin-top: 0;
 }

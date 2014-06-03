@@ -2,38 +2,48 @@ form(method='post', action=action)
   .row
     .col-md-8
       .form-group
-        label(for='dashboard_title') Title
+        label(for='dashboard_title') Dashboard title
         input.form-control.input-lg(name='dashboard_title', id='dashboard_title', value=dashboard.title)
+        p.help-block Write in the passive voice, eg ‘Passport applications’, ‘Tax disc renewals’
 
       .form-group
-        label(for='dashboard_slug') Slug
+        label(for='dashboard_slug') Dashboard slug
         input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=((dashboard.slug && !isNew) ? 'true' : undefined), value=dashboard.slug, pattern='[-a-z]+', required)
         if dashboard.slug && !isNew
           input(type='hidden', name='dashboard_slug', value=dashboard.slug)
+
+      //- h2 Modules
+
+      h2 Footer
 
       .form-group
         label(for='dashboard_description') Description
         textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
           = dashboard.description
 
-      if dashboard.department
-        .form-group
-          label(for='dashboard_department') Department
-          select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
-            each department in departments
-              option(selected=((department.id === dashboard.department) ? 'selected' : undefined), value=department.id)
-                = department.title
+      .form-group
+        label(for='dashboard_department') Department
+        select.form-control(name='dashboard_department', id='dashboard_deptartment')
+          if !dashboard.department
+            option(selected='selected', value='')
+          each department in departments
+            option(selected=((department.id === dashboard.department) ? 'selected' : undefined), value=department.id)
+              = department.title
 
       .form-group
         label(for='dashboard_customer_type') User
-        select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
+        select.form-control(name='dashboard_customer_type', id='dashboard_customer_type')
+          if !dashboard['customer-type']
+            option(selected='selected', value='')
           each customer_type in customer_types
             option(selected=((customer_type.id === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type.id)
               = customer_type.title
 
       .form-group
         label(for='dashboard_business_model') Service costs paid by:
-        select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
+        select.form-control(name='dashboard_business_model', id='dashboard_business_model')
+          if !dashboard['business-model']
+            option(selected='selected', value='')
           each business_model in business_models
             option(selected=((business_model.id === dashboard['business-model']) ? 'selected' : undefined), value=business_model.id)
               = business_model.title
@@ -58,10 +68,15 @@ form(method='post', action=action)
               +link-group('dashboard_link', link.url, link.title, true)
         a#related-links-add.btn.btn-sm.btn-default.hidden Add a new related link for this dashboard
 
-  .row.well
-    .form-group
-      label(for='commit_message') Edit summary
-      input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 40%;')
+  .well#save-changes
+    h2 Save your changes
+
+    .row
+      .form-group
+        .col-xs-4
+          label(for='commit_message') Edit summary
+          input(name='commit_message', id='commit_message', class='form-control', required)
+          p.help-block A short summary of what you've changed
 
     button(type='submit', class='btn btn-success') Save changes
 
