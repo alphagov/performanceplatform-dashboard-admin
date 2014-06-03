@@ -91,18 +91,6 @@ abbr.dept {
   right: 0;
 }
 
-form .links legend,
-form .links label,
-form .links input {
-  font-size: 12px;
-}
-
-form .links input {
-  padding: 3px;
-  height: auto;
-}
-
-form .links .form-group,
-form .links legend {
-  margin-bottom: 3px;
+#links legend {
+  font-size: 1em;
 }
