@@ -39,12 +39,13 @@ form(method='post', action=action)
     textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
       = dashboard.description
 
-  .form-group
-    label(for='dashboard_department') Department
-    select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
-      each department in departments
-        option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
-          = department.title
+  if dashboard.department
+    .form-group
+      label(for='dashboard_department') Department
+      select.form-control(name='dashboard_department', id='dashboard_deptartment', required)
+        each department in departments
+          option(selected=((department.title === dashboard.department.title) ? 'selected' : undefined), value=department.title)
+            = department.title
 
   .form-group
     label(for='dashboard_customer_type') User
