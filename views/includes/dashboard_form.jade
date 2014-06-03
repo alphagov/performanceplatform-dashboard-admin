@@ -2,14 +2,14 @@ form(method='post', action=action)
   .row
     .col-md-8
       .form-group
+        label(for='dashboard_title') Title
+        input.form-control.input-lg(name='dashboard_title', id='dashboard_title', value=dashboard.title)
+
+      .form-group
         label(for='dashboard_slug') Slug
         input(name='dashboard_slug', id='dashboard_slug', class='form-control', disabled=((dashboard.slug && !isNew) ? 'true' : undefined), value=dashboard.slug, pattern='[-a-z]+', required)
         if dashboard.slug && !isNew
           input(type='hidden', name='dashboard_slug', value=dashboard.slug)
-
-      .form-group
-        label(for='dashboard_title') Title
-        input(name='dashboard_title', id='dashboard_title', class='form-control', value=dashboard.title)
 
       .form-group
         label(for='dashboard_description') Description
@@ -29,15 +29,15 @@ form(method='post', action=action)
         select.form-control(name='dashboard_customer_type', id='dashboard_customer_type', required)
           each customer_type in customer_types
             option(selected=((customer_type.id === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type.id)
-              = customer_type
+              = customer_type.title
 
       .form-group
         label(for='dashboard_business_model') Service costs paid by:
         select.form-control(name='dashboard_business_model', id='dashboard_business_model', required)
           each business_model in business_models
             option(selected=((business_model.id === dashboard['business-model']) ? 'selected' : undefined), value=business_model.id)
-              = business_model
-      
+              = business_model.title
+
       .form-group
         label(for='dashboard_description_extra') Notes
         textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
@@ -61,7 +61,7 @@ form(method='post', action=action)
   .row.well
     .form-group
       label(for='commit_message') Edit summary
-      input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 60%;')
+      input(name='commit_message', id='commit_message', class='form-control', placeholder='A very short description of what you\'ve changed', required, style='width: 40%;')
 
     button(type='submit', class='btn btn-success') Save changes
 
