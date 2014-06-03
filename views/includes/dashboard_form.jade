@@ -45,17 +45,18 @@ form(method='post', action=action)
 
     .col-md-4#links
       if dashboard.relatedPages
-        if dashboard.relatedPages.transaction
-          fieldset
-            legend Start page
-            +link-row('URL', 'dashboard_start_page_url', dashboard.relatedPages.transaction.url)
-            +link-row('Title', 'dashboard_start_page_title', dashboard.relatedPages.transaction.title)
-        if dashboard.relatedPages.other
-          fieldset
-            legend Related links
+        fieldset#start-page
+          legend Start page
+          if dashboard.relatedPages.transaction
+            +link-group('dashboard_start_page', dashboard.relatedPages.transaction.url, dashboard.relatedPages.transaction.title, false)
+        if !dashboard.relatedPages.transaction
+          a#start-page-add.btn.btn-sm.btn-default.hidden Add a start page for this dashboard
+        fieldset#related-links
+          legend Related links
+          if dashboard.relatedPages.other
             each link, index in dashboard.relatedPages.other
-              +link-row('URL', 'dashboard_link_url', link.url)
-              +link-row('Title', 'dashboard_link_title', link.title)
+              +link-group('dashboard_link', link.url, link.title, true)
+        a#related-links-add.btn.btn-sm.btn-default.hidden Add a new related link for this dashboard
 
   .row.well
     .form-group
@@ -66,7 +67,20 @@ form(method='post', action=action)
 
   .clearfix
 
-//- Link mixin
+#hidden-start-page-template.hidden
+  +link-group('dashboard_start_page', '', '', true)
+
+#hidden-link-template.hidden
+  +link-group('dashboard_link', '', '', true)
+
+//- Link mixins
+mixin link-group(identifier, url_value, title_value, show_remove_link)
+  .link
+    if show_remove_link
+      a.remove-link.btn.btn-sm.btn-danger &times;
+    +link-row('Title', identifier + '_title', title_value)
+    +link-row('URL', identifier + '_url', url_value)
+
 mixin link-row(type, form_element_identifier, value)
   .form-group.row
     .col-sm-2

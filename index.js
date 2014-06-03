@@ -68,7 +68,8 @@ repo.open(function() {
 
   app.get('/dashboard/create', function (req, res) {
     var dashboard = {
-          'department': {}
+          'department': {},
+          'relatedPages': {}
         },
         govUKStartPage;
 
