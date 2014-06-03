@@ -13,8 +13,8 @@ var StubRepo = require('./src/stub_repo'),
     GovUK = require('./src/govuk.js');
 
 var app = express(),
-    repo = StubRepo.fromConfig(config.stub),
-    jenkins = Jenkins.fromConfig(config.jenkins),
+    repo = StubRepo.fromConfig(config.stub, config.development),
+    jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig()
     govuk = GovUK.fromConfig(config.govuk),
     tmpDashboardStore = {};

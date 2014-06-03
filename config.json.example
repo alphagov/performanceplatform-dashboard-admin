@@ -1,9 +1,9 @@
 {
+  "development": false,
   "stub": {
     "path": "./stub-repo",
     "remote": "git@github.com:alphagov/spotlight-config.git",
-    "json_glob": "dashboards/**/*.json",
-    "development": false
+    "json_glob": "dashboards/**/*.json"
   },
   "jenkins": {
     "url": "https://jenkins.server",
