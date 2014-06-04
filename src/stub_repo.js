@@ -1,9 +1,11 @@
 var async = require('async'),
     fs = require('fs'),
-    gitty = require('gitty'),
     glob = require('glob'),
     jsonschema = require('jsonschema'),
+    util = require("util"),
     _ = require('lodash');
+
+var GitRepo = require('./git_repo');
 
 function StubRepo(path, remote, json_glob, development) {
   this.path = path;
@@ -14,28 +16,7 @@ function StubRepo(path, remote, json_glob, development) {
   this.dashboards = [];
 }
 
-StubRepo.prototype.open = function(callback) {
-
-  var repoOpened = this._repoOpened.bind(this, callback);
-
-  fs.exists(this.path, function(doesExist) {
-    if (doesExist) repoOpened(gitty(this.path));
-    else gitty.clone(this.path, this.remote, function(err) {
-      if (err) console.error(err);
-      else repoOpened(gitty(this.path));
-    }.bind(this));
-  }.bind(this));
-
-};
-
-StubRepo.prototype.update = function(callback) {
-  this._repo.pull('origin', 'master', null, function(err) {
-    if (err) console.error(err);
-    else {
-      this.updateDashboards(callback);
-    }
-  }.bind(this));
-};
+util.inherits(StubRepo, GitRepo);
 
 StubRepo.prototype.save = function(isNew, dashboard, commitMessage, callback) {
   var repoPath = require('path').join('dashboards', dashboard.slug + '.json'),
@@ -122,7 +103,7 @@ StubRepo.prototype.validate = function(dashboard) {
                                if (out.indexOf(m) < 0) out.push(m);
                                return out;
                              }, [])
-    }
+    };
   });
 };
 
@@ -134,11 +115,6 @@ StubRepo.prototype.updateDashboards = function (callback) {
       this._updateClassifications(callback);
     }
   }.bind(this));
-};
-
-StubRepo.prototype._repoOpened = function(callback, repo) {
-  this._repo = repo;
-  this.update(callback);
 };
 
 StubRepo.prototype._updateDashboardsList = function(callback) {
@@ -198,8 +174,6 @@ StubRepo.prototype._updateClassifications = function(callback) {
     }
   }.bind(this));
 };
-
-
 
 StubRepo.fromConfig = function(config, development) {
   return new StubRepo(config.path, config.remote, config.json_glob, development);
