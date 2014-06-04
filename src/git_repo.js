@@ -17,6 +17,10 @@ GitRepo.prototype.open = function(callback) {
 
 };
 
+GitRepo.prototype.save = function (callback) {
+  throw('Unimplemented');
+};
+
 GitRepo.prototype.update = function(callback) {
   this._repo.pull('origin', 'master', null, function (err) {
     if (err) {

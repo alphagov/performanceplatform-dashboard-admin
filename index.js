@@ -7,6 +7,7 @@ var express = require('express'),
     _ = require('lodash');
 
 var StubRepo = require('./src/stub_repo'),
+    ConfigRepo = require('./src/config_repo'),
     Jenkins = require('./src/jenkins'),
     Dashboards = require('./src/dashboards'),
     GitConfig = require('./src/git_config'),
@@ -15,6 +16,7 @@ var StubRepo = require('./src/stub_repo'),
 
 var app = express(),
     repo = StubRepo.fromConfig(config.stub, config.development),
+    configRepo = ConfigRepo.fromConfig(config.collectors, config.development),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),

@@ -5,6 +5,10 @@
     "remote": "git@github.com:alphagov/spotlight-config.git",
     "json_glob": "dashboards/**/*.json"
   },
+  "collectors": {
+    "path": "./collector-config-repo",
+    "remote": "git@github.com:alphagov/performanceplatform-collector-config.git"
+  },
   "jenkins": {
     "url": "https://jenkins.server",
     "job": "config-deploy",
