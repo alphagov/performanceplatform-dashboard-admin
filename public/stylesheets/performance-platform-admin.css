@@ -2,6 +2,8 @@ body {
   margin-bottom: 6em;
 }
 
+/* Header */
+
 .navbar {
   border-radius: 0;
 }
@@ -30,6 +32,8 @@ body {
   border-radius: 3px;
   margin-left: 5px;
 }
+
+/* Body */
 
 h1 {
   font-size: 3em;
@@ -87,6 +91,8 @@ abbr.dept {
   right: 0;
 }
 
+/* Form */
+
 #links {
   margin-bottom: 1em;
 }
@@ -95,8 +101,14 @@ abbr.dept {
   font-size: 1em;
 }
 
-#links .btn.btn-default {
-  margin-bottom: 2em;
+#related-links-add {
+  cursor: pointer;
+}
+
+#related-links-add .glyphicon {
+  font-size: 20px;
+  margin-right: 5px;
+  vertical-align: sub;
 }
 
 .link {
@@ -119,12 +131,6 @@ form h2.sep {
   border-bottom: 1px solid #ccc;
   display: block;
   margin: 20px 15px;
-}
-
-#related-links-add .glyphicon {
-  font-size: 20px;
-  margin-right: 5px;
-  vertical-align: sub;
 }
 
 span.light {
@@ -234,5 +240,3 @@ span.light {
 .modules .module.open {
   display: block;
 }
-
-
