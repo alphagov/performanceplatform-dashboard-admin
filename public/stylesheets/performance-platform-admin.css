@@ -240,3 +240,14 @@ span.light {
 .modules .module.open {
   display: block;
 }
+
+.modules .twiddle {
+  position: absolute;
+  right: 0;
+  top: 10px;
+}
+
+.modules .twiddle label {
+  padding: 3px;
+  width: 40px;
+}
