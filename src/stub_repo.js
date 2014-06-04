@@ -107,6 +107,10 @@ StubRepo.prototype.validate = function(dashboard) {
   });
 };
 
+StubRepo.prototype.reloadMetadata = function (callback) {
+  this.updateDashboards(callback);
+};
+
 StubRepo.prototype.updateDashboards = function (callback) {
   this._updateDashboardsList(function (err) {
     if (err) {
