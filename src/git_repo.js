@@ -18,12 +18,17 @@ GitRepo.prototype.open = function(callback) {
 };
 
 GitRepo.prototype.update = function(callback) {
-  this._repo.pull('origin', 'master', null, function(err) {
-    if (err) console.error(err);
-    else {
-      this.updateDashboards(callback);
+  this._repo.pull('origin', 'master', null, function (err) {
+    if (err) {
+      console.error(err);
+    } else {
+      this.reloadMetadata(callback);
     }
   }.bind(this));
+};
+
+GitRepo.prototype.reloadMetadata = function (callback) {
+  callback();
 };
 
 GitRepo.prototype._repoOpened = function(callback, repo) {
