@@ -16,7 +16,7 @@ var StubRepo = require('./src/stub_repo'),
 var app = express(),
     repo = StubRepo.fromConfig(config.stub, config.development),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
-    gitConfig = new GitConfig()
+    gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
     tmpDashboardStore = {};
 
@@ -41,6 +41,15 @@ repo.open(function() {
 
     app.set('committer', data);
   });
+
+  var dashboardCreationBaseView = {
+    'modules': modules,
+    'dashboard': {},
+    'departments': repo.departments,
+    'agencies': repo.agencies,
+    'customer_types': repo.customerTypes,
+    'business_models': repo.businessModels
+  };
 
   app.get('/', function (req, res) {
     var groupedDashboards = Dashboards.splitByType(repo.dashboards);
@@ -87,27 +96,21 @@ repo.open(function() {
           res.redirect('/dashboard/new');
         } else {
           dashboard = _.merge(dashboard, json, { slug: govUKStartPage.substring(19) });
-          res.render('create', {
-            'action': '/dashboard/create',
-            'modules': modules,
-            'dashboard': dashboard,
-            'departments': repo.departments,
-            'agencies': repo.agencies,
-            'customer_types': repo.customerTypes,
-            'business_models': repo.businessModels
-          });
+          res.render('create',
+            _.merge(dashboardCreationBaseView, {
+              'action': '/dashboard/create',
+              'dashboard': dashboard
+            })
+          );
         }
       });
     } else {
-      res.render('create', {
-        'action': '/dashboard/create',
-        'modules': modules,
-        'dashboard': dashboard,
-        'departments': repo.departments,
-        'agencies': repo.agencies,
-        'customer_types': repo.customerTypes,
-        'business_models': repo.businessModels
-      });
+      res.render('create',
+        _.merge(dashboardCreationBaseView, {
+          'action': '/dashboard/create',
+          'dashboard': dashboard
+        })
+      );
     }
   });
 
@@ -127,30 +130,26 @@ repo.open(function() {
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
     var dashboard = repo.selectDashboard(req.params[0]);
-    res.render('edit', {
-      "action": '/dashboard/' + dashboard.slug + '/edit',
-      "modules": modules,
-      "dashboard": dashboard,
-      "departments": repo.departments,
-      "agencies": repo.agencies,
-      "customer_types": repo.customerTypes,
-      "business_models": repo.businessModels
-    });
+
+    res.render('edit',
+      _.merge(dashboardCreationBaseView, {
+        'action': '/dashboard/' + dashboard.slug + '/edit',
+        'dashboard': dashboard
+      })
+    );
   });
 
   app.get(/\/dashboard\/(.+)\/rescue/, function(req, res) {
     var rescued = tmpDashboardStore[req.params[0]];
-    res.render(rescued.isNew ? 'create' : 'edit', {
-      "action": rescued.isNew ? '/dashboard/create' : '/dashboard/' + rescued.dashboard.slug + '/edit',
-      "modules": modules,
-      "dashboard": rescued.dashboard,
-      "departments": repo.departments,
-      "agencies": repo.agencies,
-      "customer_types": repo.customerTypes,
-      "business_models": repo.businessModels,
-      "isNew": rescued.isNew,
-      "errors": req.flash('error')
-    });
+
+    res.render(rescued.isNew ? 'create' : 'edit',
+      _.merge(dashboardCreationBaseView, {
+        'action': rescued.isNew ? '/dashboard/create' : '/dashboard/' + rescued.dashboard.slug + '/edit',
+        'dashboard': rescued.dashboard,
+        'isNew': rescued.isNew,
+        'errors': req.flash('error')
+      })
+    );
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
