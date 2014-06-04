@@ -1,0 +1,62 @@
+[
+  {
+    "id": "realtime",
+    "title": "Live service usage",
+    "built": true
+  },
+  {
+    "id": "tx",
+    "title": "Transactions explorer",
+    "built": false
+  },
+  {
+    "id": "volumetrics",
+    "title": "Volumetrics",
+    "built": false
+  },
+  {
+    "id": "digital-take-up",
+    "title": "Digital take-up",
+    "built": false
+  },
+  {
+    "id": "user-satisfaction",
+    "title": "User satisfaction",
+    "built": false
+  },
+  {
+    "id": "completion-rate",
+    "title": "Completion rate",
+    "built": false
+  },
+  {
+    "id": "users-at-each-step",
+    "title": "Users at each step",
+    "built": false
+  },
+  {
+    "id": "help-usage",
+    "title": "Help usage",
+    "built": false
+  },
+  {
+    "id": "errors-reported",
+    "title": "Errors reported",
+    "built": false
+  },
+  {
+    "id": "devices",
+    "title": "Devices",
+    "built": false
+  },
+  {
+    "id": "browsers",
+    "title": "Browsers",
+    "built": false
+  },
+  {
+    "id": "service-availability",
+    "title": "Service availability",
+    "built": false
+  }
+]

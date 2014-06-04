@@ -114,3 +114,125 @@ abbr.dept {
 #save-changes h2 {
   margin-top: 0;
 }
+
+form h2.sep {
+  border-bottom: 1px solid #ccc;
+  display: block;
+  margin: 20px 15px;
+}
+
+#related-links-add .glyphicon {
+  font-size: 20px;
+  margin-right: 5px;
+  vertical-align: sub;
+}
+
+span.light {
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.twiddle legend {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  margin-bottom: 5px;
+  border: none;
+}
+
+.twiddle input[type=radio] {
+  display: none;
+}
+
+.twiddle label {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-right: none;
+  font-weight: normal;
+  width: 140px;
+  text-align: center;
+  color: #428bca;
+}
+
+.twiddle label:first-of-type {
+  border-radius: 5px 0 0 5px;
+}
+
+.twiddle label:last-of-type {
+  border-right: 1px solid #ccc;
+  border-radius: 0 5px 5px 0;
+}
+
+.twiddle input[type=radio]:checked + label {
+  box-shadow: inset 0px 1px 5px 0px rgba(50, 50, 50, 0.1);
+  color: #333;
+  font-weight: bold;
+  background-color: #ddd;
+}
+
+.modules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: -10px;
+}
+
+.modules li {
+  position: relative;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.modules li > a,
+.modules li span.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 18px;
+}
+
+.modules li.disabled span.title {
+  color: #999;
+}
+
+.modules li > .module + .icon {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  font-size: 18px;
+  width: 0;
+  height: 0;
+  border: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid #428bc7;
+}
+
+.modules li.disabled > .module + .icon {
+  border-left-color: #999;
+}
+
+.modules li > .module:target + .icon,
+.modules li > .module.open + .icon {
+  top: 21px;
+  border: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid #428bc7;
+}
+
+.modules li.disabled > .module:target + .icon,
+.modules li.disabled > .module.open + .icon {
+  border-top-color: #999;
+}
+
+.modules .module {
+  display: none;
+}
+
+.modules .module:target,
+.modules .module.open {
+  display: block;
+}
+
+

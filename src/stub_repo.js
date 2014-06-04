@@ -160,6 +160,7 @@ StubRepo.prototype._updateDashboardsList = function(callback) {
 StubRepo.prototype._updateClassifications = function(callback) {
   async.map([
     require('path').join(this.path, 'departments.json'),
+    require('path').join(this.path, 'agencies.json'),
     require('path').join(this.path, 'business-models.json'),
     require('path').join(this.path, 'customer-types.json')
   ], fs.readFile,
@@ -173,17 +174,22 @@ StubRepo.prototype._updateClassifications = function(callback) {
         obj.id = id;
         return obj;
       });
-      this.businessModels = Object.keys(json[1]).map(function(id) {
-        var obj = {
-          id: id,
-          title: json[1][id]
-        };
+      this.agencies = Object.keys(json[1]).map(function(id) {
+        var obj = json[1][id];
+        obj.id = id;
         return obj;
       });
-      this.customerTypes = Object.keys(json[2]).map(function(id) {
+      this.businessModels = Object.keys(json[2]).map(function(id) {
         var obj = {
           id: id,
           title: json[2][id]
+        };
+        return obj;
+      });
+      this.customerTypes = Object.keys(json[3]).map(function(id) {
+        var obj = {
+          id: id,
+          title: json[3][id]
         };
         return obj;
       });

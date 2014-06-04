@@ -10,7 +10,8 @@ var StubRepo = require('./src/stub_repo'),
     Jenkins = require('./src/jenkins'),
     Dashboards = require('./src/dashboards'),
     GitConfig = require('./src/git_config'),
-    GovUK = require('./src/govuk.js');
+    GovUK = require('./src/govuk.js'),
+    modules = require('./src/modules.json');
 
 var app = express(),
     repo = StubRepo.fromConfig(config.stub, config.development),
@@ -88,8 +89,10 @@ repo.open(function() {
           dashboard = _.merge(dashboard, json, { slug: govUKStartPage.substring(19) });
           res.render('create', {
             'action': '/dashboard/create',
+            'modules': modules,
             'dashboard': dashboard,
             'departments': repo.departments,
+            'agencies': repo.agencies,
             'customer_types': repo.customerTypes,
             'business_models': repo.businessModels
           });
@@ -98,8 +101,10 @@ repo.open(function() {
     } else {
       res.render('create', {
         'action': '/dashboard/create',
+        'modules': modules,
         'dashboard': dashboard,
         'departments': repo.departments,
+        'agencies': repo.agencies,
         'customer_types': repo.customerTypes,
         'business_models': repo.businessModels
       });
@@ -124,8 +129,10 @@ repo.open(function() {
     var dashboard = repo.selectDashboard(req.params[0]);
     res.render('edit', {
       "action": '/dashboard/' + dashboard.slug + '/edit',
+      "modules": modules,
       "dashboard": dashboard,
       "departments": repo.departments,
+      "agencies": repo.agencies,
       "customer_types": repo.customerTypes,
       "business_models": repo.businessModels
     });
@@ -135,8 +142,10 @@ repo.open(function() {
     var rescued = tmpDashboardStore[req.params[0]];
     res.render(rescued.isNew ? 'create' : 'edit', {
       "action": rescued.isNew ? '/dashboard/create' : '/dashboard/' + rescued.dashboard.slug + '/edit',
+      "modules": modules,
       "dashboard": rescued.dashboard,
       "departments": repo.departments,
+      "agencies": repo.agencies,
       "customer_types": repo.customerTypes,
       "business_models": repo.businessModels,
       "isNew": rescued.isNew,
@@ -191,6 +200,7 @@ repo.open(function() {
     }
 
     existingDashboard.department = form.dashboard_department;
+    existingDashboard.agency = form.dashboard_agency;
 
     return existingDashboard;
   }
