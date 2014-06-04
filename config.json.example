@@ -15,5 +15,12 @@
     }
   },
   "govuk": {
+  },
+  "stagecraft": {
+    "url": "https://stagecraft.local",
+    "creds": {
+      "user": "[USERNAME_HERE]",
+      "password": "[PASSWORD_HERE]"
+    }
   }
 }
