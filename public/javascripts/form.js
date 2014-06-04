@@ -23,4 +23,10 @@ $(document).ready(function () {
   $('#related-links').delegate('.remove-link', 'click', function (e) {
     $(this).parent().remove();
   });
+
+  $('.modules').delegate('li > a', 'click', function(e) {
+    var id = $(this).attr('href');
+    $(id).toggleClass('open');
+    e.preventDefault();
+  });
 });

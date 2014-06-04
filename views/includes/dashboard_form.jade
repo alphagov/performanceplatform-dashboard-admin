@@ -2,6 +2,11 @@ form(method='post', action=action)
   .row
     .col-md-8
       .form-group
+        label(for='dashboard_start_page_url') GOV.UK start page web address
+        input.form-control(name='dashboard_start_page_url', id='dashboard_start_page_url', value=dashboard.relatedPages && dashboard.relatedPages.transaction && dashboard.relatedPages.transaction.url)
+        p.help-block We’ll use the information from the GOV.UK start page to prefill several of the boxes below
+
+      .form-group
         label(for='dashboard_title') Dashboard title
         input.form-control.input-lg(name='dashboard_title', id='dashboard_title', value=dashboard.title)
         p.help-block Write in the passive voice, eg ‘Passport applications’, ‘Tax disc renewals’
@@ -12,14 +17,44 @@ form(method='post', action=action)
         if dashboard.slug && !isNew
           input(type='hidden', name='dashboard_slug', value=dashboard.slug)
 
+    .col-md-4#links
+      .form-group
+        label(for='dashboard_start_page_title') Link to service
+        input.form-control(name='dashboard_start_page_title', id='dashboard_start_page_title', value=dashboard.relatedPages && dashboard.relatedPages.transaction && dashboard.relatedPages.transaction.title)
+        p.help-block Link text taken from GOV.UK start page
+      if dashboard.relatedPages
+        fieldset#related-links
+          if dashboard.relatedPages.other
+            each link, index in dashboard.relatedPages.other
+              +link-group('dashboard_link', link.url, link.title, true)
+        a#related-links-add
+          span.glyphicon.glyphicon-plus-sign
+          span Add more related links
+
       //- h2 Modules
 
-      h2 Footer
+  .row
+    h2.sep Modules
+    .col-md-8
+      ul.modules
+        each module in modules
+          li(class=module.built ? '' : 'disabled')
+            if module.built
+              a(href='#' + module.id)= module.title
+            else
+              span.title= module.title
+            div.module(id=module.id) blah
+            span.icon
+
+  .row
+    h2.sep Footer
+    .col-md-8
 
       .form-group
         label(for='dashboard_description') Description
         textarea(name='dashboard_description', id='dashboard_description', class='form-control',)
           = dashboard.description
+        p.help-block Keep it chopped out, yeah?
 
       .form-group
         label(for='dashboard_department') Department
@@ -31,42 +66,35 @@ form(method='post', action=action)
               = department.title
 
       .form-group
-        label(for='dashboard_customer_type') User
-        select.form-control(name='dashboard_customer_type', id='dashboard_customer_type')
-          if !dashboard['customer-type']
+        label(for='dashboard_agency') Agency/organisation
+          span.light optional
+        select.form-control(name='dashboard_agency', id='dashboard_agency')
+          if !dashboard.agency
             option(selected='selected', value='')
+          each agency in agencies
+            option(selected=((agency.id === dashboard.agency) ? 'selected' : undefined), value=agency.id)
+              = agency.title
+
+      .form-group
+        fieldset.twiddle
+          legend User
           each customer_type in customer_types
-            option(selected=((customer_type.id === dashboard['customer-type']) ? 'selected' : undefined), value=customer_type.id)
+            input(type='radio', id='ct_' + customer_type.id, name='dashboard_customer_type', checked=((customer_type.id === dashboard['customer-type']) ? 'checked' : undefined), value=customer_type.id)
+            label(for='ct_' + customer_type.id)
               = customer_type.title
 
       .form-group
-        label(for='dashboard_business_model') Service costs paid by:
-        select.form-control(name='dashboard_business_model', id='dashboard_business_model')
-          if !dashboard['business-model']
-            option(selected='selected', value='')
+        fieldset.twiddle
+          legend Service costs paid by
           each business_model in business_models
-            option(selected=((business_model.id === dashboard['business-model']) ? 'selected' : undefined), value=business_model.id)
+            input(type='radio', id='bm_' + business_model.id, name='dashboard_business_model', checked=((business_model.id === dashboard['business-model']) ? 'checked' : undefined), value=business_model.id)
+            label(for='bm_' + business_model.id)
               = business_model.title
 
       .form-group
         label(for='dashboard_description_extra') Notes
         textarea.form-control(name='dashboard_description_extra', id='dashboard_description_extra')
           = dashboard['description-extra']
-
-    .col-md-4#links
-      if dashboard.relatedPages
-        fieldset#start-page
-          legend Start page
-          if dashboard.relatedPages.transaction
-            +link-group('dashboard_start_page', dashboard.relatedPages.transaction.url, dashboard.relatedPages.transaction.title, false)
-        if !dashboard.relatedPages.transaction
-          a#start-page-add.btn.btn-sm.btn-default.hidden Add a start page for this dashboard
-        fieldset#related-links
-          legend Related links
-          if dashboard.relatedPages.other
-            each link, index in dashboard.relatedPages.other
-              +link-group('dashboard_link', link.url, link.title, true)
-        a#related-links-add.btn.btn-sm.btn-default.hidden Add a new related link for this dashboard
 
   .well#save-changes
     h2 Save your changes
