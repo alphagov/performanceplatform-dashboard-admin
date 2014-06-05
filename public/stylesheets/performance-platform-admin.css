@@ -33,6 +33,10 @@ body {
   margin-left: 5px;
 }
 
+#deploy-progress {
+  margin-top: 10px;
+}
+
 /* Body */
 
 h1 {

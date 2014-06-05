@@ -256,7 +256,8 @@ repo.open(function() {
               '" target="_blank"> the &ldquo;',
               dashboard.title,
               '&rdquo; dashboard</a> have been saved. ',
-              'GOV.UK preview update in progress&hellip;'
+              'GOV.UK preview update in progress&hellip;',
+              '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
             ].join('');
             req.flash('info', updateMessage);
             res.redirect('/');
