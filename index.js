@@ -212,8 +212,10 @@ repo.open(function() {
     existingDashboard.department = form.dashboard_department;
     existingDashboard.agency = form.dashboard_agency;
 
-    existingDashboard.modules = moduleHelper.generate(
-        existingDashboard.modules, form);
+    var strippedModules = moduleHelper.strip(existingDashboard.modules),
+        newModules = moduleHelper.modified(form);
+
+    existingDashboard.modules = newModules.concat(strippedModules);
 
     return existingDashboard;
   }

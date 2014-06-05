@@ -6,7 +6,7 @@ function ModuleHelper(modules) {
   this.modules = modules;
 }
 
-ModuleHelper.prototype.generate = function(existingModules, form) {
+ModuleHelper.prototype.strip = function(existingModules) {
 
   existingModules = existingModules || [];
 
@@ -14,11 +14,17 @@ ModuleHelper.prototype.generate = function(existingModules, form) {
     return m.built ? m.slugs : [];
   }));
 
-  var remainingModules = existingModules.filter(function(m) {
+  return existingModules.filter(function(m) {
     return slugsToRemove.indexOf(m.slug) < 0;
   });
 
-  var newModules = _.flatten(this.modules.map(function(m) {
+};
+
+ModuleHelper.prototype.modified = function(form) {
+
+  existingModules = existingModules || [];
+
+  return _.flatten(this.modules.map(function(m) {
     var moduleConfig = [];
     if (m.built) {
       moduleConfig = m.templates.map(function(template) {
