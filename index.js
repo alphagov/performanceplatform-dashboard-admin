@@ -2,6 +2,7 @@ var express = require('express'),
     config = require('./config'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
+    jadeDynamicIncludes = require('jade-dynamic-includes');
     session = require('express-session'),
     flash = require('connect-flash'),
     _ = require('lodash');
@@ -26,6 +27,9 @@ repo.open(function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+
+  jadeDynamicIncludes.initTemplates('views/modules', true);
+  app.use(jadeDynamicIncludes.attachTemplatesToRequest());
 
   app.use(express.static('public'));
   app.use(bodyParser());

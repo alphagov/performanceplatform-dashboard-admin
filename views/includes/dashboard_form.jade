@@ -46,7 +46,8 @@ form(method='post', action=action)
                 label(for='module_' + module.id + '_enabled_off') Off
             else
               span.title= module.title
-            div.module(id='module_' + module.id) blah
+            div.module(id='module_' + module.id)
+              != renderTemplate(module.id)
             span.icon
 
   .row
