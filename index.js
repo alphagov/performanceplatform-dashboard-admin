@@ -13,6 +13,7 @@ var StubRepo = require('./src/stub_repo'),
     Dashboards = require('./src/dashboards'),
     GitConfig = require('./src/git_config'),
     GovUK = require('./src/govuk.js'),
+    ModuleHelper = require('./src/module_helper.js'),
     modules = require('./src/modules.json');
 
 var app = express(),
@@ -21,13 +22,13 @@ var app = express(),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
+    moduleHelper = new ModuleHelper(modules);
     tmpDashboardStore = {};
 
 repo.open(function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.locals.pretty = true;
 
   jadeDynamicIncludes.initTemplates('views/modules', true);
   app.use(jadeDynamicIncludes.attachTemplatesToRequest());
@@ -50,6 +51,7 @@ repo.open(function() {
   });
 
   var dashboardCreationBaseView = {
+    'moduleHelper': moduleHelper,
     'dashboard': {},
     'departments': repo.departments,
     'agencies': repo.agencies,
@@ -82,28 +84,6 @@ repo.open(function() {
     });
   });
 
-  function parseModules(modules, dashboard) {
-    return modules.map(function(module) {
-
-      if (dashboard.modules) {
-        module.existing = _.flatten(module.slugs.map(function(slug) {
-          var matched = dashboard.modules.filter(function(dashboardModule) {
-            return dashboardModule.slug === slug;
-          });
-
-          return matched;
-        }));
-
-        module.enabled = module.existing.length > 0 && module.existing.every(function(m) { return !m.disabled });
-      } else {
-        module.existing = [ ];
-        module.enabled = false;
-      }
-
-      return module;
-    });
-  }
-
   app.get('/dashboard/create', function (req, res) {
     var dashboard = {
           'relatedPages': {}
@@ -128,7 +108,7 @@ repo.open(function() {
             _.merge(dashboardCreationBaseView, {
               'action': '/dashboard/create',
               'dashboard': dashboard,
-              'modules': parseModules(modules, dashboard)
+              'modules': moduleHelper.parse(dashboard)
             })
           );
         }
@@ -138,7 +118,7 @@ repo.open(function() {
         _.merge(dashboardCreationBaseView, {
           'action': '/dashboard/create',
           'dashboard': dashboard,
-          'modules': parseModules(modules, dashboard)
+          'modules': moduleHelper.parse(dashboard)
         })
       );
     }
@@ -165,7 +145,7 @@ repo.open(function() {
       _.merge(dashboardCreationBaseView, {
         'action': '/dashboard/' + dashboard.slug + '/edit',
         'dashboard': dashboard,
-        'modules': parseModules(modules, dashboard)
+        'modules': moduleHelper.parse(dashboard)
       })
     );
   });
@@ -232,8 +212,8 @@ repo.open(function() {
     existingDashboard.department = form.dashboard_department;
     existingDashboard.agency = form.dashboard_agency;
 
-    // Modules
-    // form.module_tx_identifier will contain the Transactions Explorer slug
+    existingDashboard.modules = moduleHelper.generate(
+        existingDashboard.modules, form);
 
     return existingDashboard;
   }
@@ -258,6 +238,7 @@ repo.open(function() {
 
     repo.save(isNew, dashboard, sanitiseCommitMessage(commitMessage), function (err) {
       if (err) {
+        console.error(err);
         req.flash('error', err.message ? err.message : err);
         res.redirect(redirectUrl);
       } else {

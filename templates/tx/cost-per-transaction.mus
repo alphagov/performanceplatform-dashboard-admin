@@ -1,0 +1,21 @@
+{
+  "slug": "cost-per-transaction",
+  "module-type": "kpi",
+  "title": "Cost per transaction",
+  "data-group": "transactional-services",
+  "data-type": "summaries",
+  "classes": "cols3",
+  "query-params": {
+    "filter_by": [
+      "service_id:{{ form.module_tx_identifier }}",
+      "type:seasonally-adjusted"
+    ],
+    "sort_by": "_timestamp:descending"
+  },
+  "value-attribute": "cost_per_transaction",
+  "format": {
+    "type": "currency",
+    "pence": true
+  },
+  "disabled": {{ form.module_tx_disabled }}
+}
