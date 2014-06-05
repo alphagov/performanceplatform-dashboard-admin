@@ -22,8 +22,6 @@ ModuleHelper.prototype.strip = function(existingModules) {
 
 ModuleHelper.prototype.modified = function(form) {
 
-  existingModules = existingModules || [];
-
   return _.flatten(this.modules.map(function(m) {
     var moduleConfig = [];
     if (m.built) {
