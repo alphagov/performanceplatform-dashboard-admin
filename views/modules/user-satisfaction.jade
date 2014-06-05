@@ -1,0 +1,15 @@
+- var pageSlug = dashboard.relatedPages.transaction.url.replace('https://www.gov.uk/', '')
+
+p User satisfaction data is collected from the GOV.UK done page for the service.
+
+p
+  a(href='https://www.performance.service.gov.uk/data/#{pageSlug}/customer-satisfaction', target='_blank')
+    | View user satisfaction data for the “#{dashboard.relatedPages.transaction.title}” service
+
+p
+  | Don't edit this module for anything using the old
+  | style user satisfaction module (like 'Tax disc' or 'SORN')
+
+.form-group
+  label(for='module_user_satisfaction_slug') GOV.UK done page slug
+  input.form-control(type='text', value=pageSlug, id='module_user_satisfaction_slug', name='module_user_satisfaction_slug')
