@@ -27,6 +27,7 @@ repo.open(function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.locals.pretty = true;
 
   jadeDynamicIncludes.initTemplates('views/modules', true);
   app.use(jadeDynamicIncludes.attachTemplatesToRequest());
@@ -230,6 +231,9 @@ repo.open(function() {
 
     existingDashboard.department = form.dashboard_department;
     existingDashboard.agency = form.dashboard_agency;
+
+    // Modules
+    // form.module_tx_identifier will contain the Transactions Explorer slug
 
     return existingDashboard;
   }
