@@ -37,8 +37,13 @@
   {
     "id": "user-satisfaction",
     "title": "User satisfaction",
-    "slugs": [],
-    "built": false
+    "slugs": [
+      "user-satisfaction"
+    ],
+    "templates": [
+      "user-satisfaction.mus"
+    ],
+    "built": true
   },
   {
     "id": "completion-rate",

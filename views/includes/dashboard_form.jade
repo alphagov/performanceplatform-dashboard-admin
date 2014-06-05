@@ -47,7 +47,7 @@ form(method='post', action=action)
             else
               span.title= module.title
             div.module(id='module_' + module.id)
-              != renderTemplate(module.id, { module: module, moduleHelper: moduleHelper })
+              != renderTemplate(module.id, { module: module, moduleHelper: moduleHelper, dashboard: dashboard })
             span.icon
 
   .row
