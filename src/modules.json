@@ -20,7 +20,8 @@
     "slugs": [
       "live-service-usage"
     ],
-    "built": false
+    "data_type": "realtime",
+    "built": true
   },
   {
     "id": "volumetrics",

@@ -1,17 +1,44 @@
 var async = require('async'),
     fs = require('fs-extra'),
     path = require('path'),
-    util = require('util');
+    util = require('util'),
+    glob = require('glob');
 
 var GitRepo = require('./git_repo');
 
-function CollectorRepo(path, remote, development) {
+function CollectorRepo(path, remote, query_glob, development) {
   this.path = path;
   this.remote = remote;
+  this.query_glob = query_glob;
   this.development = development;
 }
 
 util.inherits(CollectorRepo, GitRepo);
+
+CollectorRepo.prototype.reloadMetadata = function(callback) {
+  var query_glob = require('path').join(this.path, this.query_glob);
+
+  glob(query_glob, function(err, files) {
+    if (err) callback(err);
+    else {
+      async.map(files, fs.readFile, function(err, content) {
+        this.collectors = content.map(function(c) { return c.toString('utf8'); })
+                                 .map(JSON.parse);
+        callback();
+        this.collectorsByDataGroup = this.collectors.reduce(function(m, c) {
+          var dataGroup = c['data-set']['data-group'],
+              collectors = m[dataGroup];
+
+          if (!collectors) m[dataGroup] = collectors = [ ];
+
+          collectors.push(c);
+
+          return m;
+        }, {});
+      }.bind(this));
+    }
+  }.bind(this));
+};
 
 CollectorRepo.prototype.save = function (moduleType, dataGroup, dataType, config, callback) {
   var configFilePath = path.join('queries', dataGroup, dataType + '.json'),
@@ -57,7 +84,12 @@ CollectorRepo.prototype.save = function (moduleType, dataGroup, dataType, config
 };
 
 CollectorRepo.fromConfig = function(config, development) {
-  return new CollectorRepo(config.path, config.remote, development);
+  return new CollectorRepo(
+    config.path,
+    config.remote,
+    config.query_glob,
+    development
+  );
 };
 
 module.exports = CollectorRepo;

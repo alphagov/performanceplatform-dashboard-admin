@@ -23,7 +23,7 @@ var app = express(),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
-    moduleHelper = new ModuleHelper(modules);
+    moduleHelper = new ModuleHelper(modules, collectorRepo);
     tmpDashboardStore = {};
 
 async.parallel([

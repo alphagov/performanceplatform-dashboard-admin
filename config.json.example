@@ -7,7 +7,8 @@
   },
   "collectors": {
     "path": "./collector-config",
-    "remote": "git@github.com:alphagov/performanceplatform-collector-config.git"
+    "remote": "git@github.com:alphagov/performanceplatform-collector-config.git",
+    "query_glob": "queries/**/*.json"
   },
   "jenkins": {
     "url": "https://jenkins.server",
