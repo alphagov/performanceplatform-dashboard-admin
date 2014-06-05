@@ -1,0 +1,22 @@
+{
+  "slug": "transactions-per-year",
+  "module-type": "kpi",
+  "title": "Transactions per year",
+  "data-group": "transactional-services",
+  "data-type": "summaries",
+  "classes": "cols3",
+  "query-params": {
+    "filter_by": [
+      "service_id:{{ form.module_tx_identifier }}",
+      "type:seasonally-adjusted"
+    ],
+    "sort_by": "_timestamp:descending"
+  },
+  "value-attribute": "number_of_transactions",
+  "format": {
+    "type": "number",
+    "magnitude": true,
+    "sigfigs": 3
+  },
+  "disabled": {{ form.module_tx_disabled }}
+}

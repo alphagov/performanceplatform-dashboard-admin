@@ -1,0 +1,22 @@
+{
+  "slug": "total-cost",
+  "module-type": "kpi",
+  "title": "Total cost",
+  "data-group": "transactional-services",
+  "data-type": "summaries",
+  "classes": "cols3",
+  "query-params": {
+    "filter_by": [
+      "service_id:{{ form.module_tx_identifier }}",
+      "type:seasonally-adjusted"
+    ],
+    "sort_by": "_timestamp:descending"
+  },
+  "value-attribute": "total_cost",
+  "format": {
+    "type": "currency",
+    "magnitude": true,
+    "sigfigs": 3
+  },
+  "disabled": {{ form.module_tx_disabled }}
+}

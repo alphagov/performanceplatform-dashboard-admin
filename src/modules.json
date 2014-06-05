@@ -1,21 +1,26 @@
 [
   {
+    "id": "tx",
+    "title": "Transactions Explorer",
+    "slugs": [
+      "transactions-per-year",
+      "total-cost",
+      "cost-per-transaction"
+    ],
+    "templates": [
+      "tx/transactions-per-year.mus",
+      "tx/total-cost.mus",
+      "tx/cost-per-transaction.mus"
+    ],
+    "built": true
+  },
+  {
     "id": "realtime",
     "title": "Live service usage",
     "slugs": [
       "live-service-usage"
     ],
-    "built": true
-  },
-  {
-    "id": "tx",
-    "title": "Transactions Explorer",
-    "slugs": [
-      "cost-per-transaction",
-      "transactions-per-year",
-      "total-cost"
-    ],
-    "built": true
+    "built": false
   },
   {
     "id": "volumetrics",

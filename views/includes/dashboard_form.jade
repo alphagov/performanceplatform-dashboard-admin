@@ -40,14 +40,14 @@ form(method='post', action=action)
             if module.built
               a(href='#module_' + module.id)= module.title
               fieldset.twiddle
-                input(type='radio', id='module_' + module.id + '_enabled_on', name='module_' + module.id + '_enabled', value='true', checked=module.enabled ? 'checked' : undefined)
-                label(for='module_' + module.id + '_enabled_on') On
-                input(type='radio', id='module_' + module.id + '_enabled_off', name='module_' + module.id + '_enabled', value='false', checked=module.enabled ? undefined : 'checked')
-                label(for='module_' + module.id + '_enabled_off') Off
+                input(type='radio', id='module_' + module.id + '_disabled_off', name='module_' + module.id + '_disabled', value='false', checked=module.enabled ? 'checked' : undefined)
+                label(for='module_' + module.id + '_disabled_off') On
+                input(type='radio', id='module_' + module.id + '_disabled_on', name='module_' + module.id + '_disabled', value='true', checked=module.enabled ? undefined : 'checked')
+                label(for='module_' + module.id + '_disabled_on') Off
             else
               span.title= module.title
             div.module(id='module_' + module.id)
-              != renderTemplate(module.id, {})
+              != renderTemplate(module.id, { module: module, moduleHelper: moduleHelper })
             span.icon
 
   .row
