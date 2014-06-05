@@ -248,13 +248,16 @@ repo.open(function() {
             req.flash('error', err.message + ' Your changes have been made and are safe.');
             res.redirect(redirectUrl);
           } else {
+            var cachebust = Math.floor(Math.random() * (999999) + 999999);
             var updateMessage = [
               'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
               dashboard.slug,
+              '?cachebust=', cachebust,
               '" target="_blank"> the &ldquo;',
               dashboard.title,
               '&rdquo; dashboard</a> have been saved. ',
-              'GOV.UK preview update in progress&hellip;'
+              'GOV.UK preview update in progress&hellip;',
+              '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
             ].join('');
             req.flash('info', updateMessage);
             res.redirect('/');
