@@ -27,6 +27,7 @@ repo.open(function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.locals.pretty = true;
 
   jadeDynamicIncludes.initTemplates('views/modules', true);
   app.use(jadeDynamicIncludes.attachTemplatesToRequest());
