@@ -5,6 +5,7 @@ var express = require('express'),
     jadeDynamicIncludes = require('jade-dynamic-includes');
     session = require('express-session'),
     flash = require('connect-flash'),
+    async = require('async'),
     _ = require('lodash');
 
 var StubRepo = require('./src/stub_repo'),
@@ -133,9 +134,7 @@ repo.open(function() {
       'relatedPages': {}
     };
 
-    var newDashboard = createDashboard(dashboard, req.body);
-
-    saveRepo(true, newDashboard, req.body.commit_message, req, res);
+    saveDashboard(true, dashboard, req.body.commit_message, req, res);
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
@@ -164,11 +163,7 @@ repo.open(function() {
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
-
-    var newDashboard = createDashboard(dashboard, req.body);
-
-    saveRepo(false, newDashboard, req.body.commit_message, req, res);
+    saveDashboard(false, repo.selectDashboard(req.params[0]), req.body.commit_message, req, res);
   });
 
   function createDashboard (existingDashboard, form) {
@@ -212,10 +207,49 @@ repo.open(function() {
     existingDashboard.department = form.dashboard_department;
     existingDashboard.agency = form.dashboard_agency;
 
-    existingDashboard.modules = moduleHelper.generate(
-        existingDashboard.modules, form);
-
     return existingDashboard;
+  }
+
+  function sanitiseCommitMessage (commitMessage) {
+    return commitMessage.replace(/"/g, '\'');
+  }
+
+  function saveDashboard(isNew, existingDashboard, commitMessage, req, res) {
+    var tmpId = '' + Date.now() + Math.round(Math.random() * 1000000),
+        redirectUrl = '/dashboard/' + tmpId + '/rescue',
+        newDashboard = createDashboard(existingDashboard, req.body),
+        strippedModules = moduleHelper.strip(newDashboard.modules),
+        newModules = moduleHelper.modified(req.body),
+        sanitisedCommitMessage = sanitiseCommitMessage(commitMessage);
+
+    newDashboard.modules = newModules.concat(strippedModules);
+
+    tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: newDashboard };
+
+    async.series([
+      repo.save.bind(repo, isNew, newDashboard, sanitisedCommitMessage),
+      jenkins.deploy.bind(jenkins)
+    ], function(err, results) {
+      if (err) {
+        console.error(err);
+        req.flash('error', err.message ? err.message : err);
+        res.redirect(redirectUrl);
+      } else {
+          var cachebust = Math.floor(Math.random() * (999999) + 999999);
+          var updateMessage = [
+            'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
+            newDashboard.slug,
+            '?cachebust=', cachebust,
+            '" target="_blank"> the &ldquo;',
+            newDashboard.title,
+            '&rdquo; dashboard</a> have been saved. ',
+            'GOV.UK preview update in progress&hellip;',
+            '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
+          ].join('');
+          req.flash('info', updateMessage);
+          res.redirect('/');
+      }
+    });
   }
 
   app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
@@ -223,49 +257,8 @@ repo.open(function() {
 
     dashboard.published = true;
 
-    saveRepo(false, dashboard, 'Publish \'' + dashboard.title + '\' dashboard', req, res);
+    saveDashboard(false, dashboard, 'Publish \'' + dashboard.title + '\' dashboard', req, res);
   });
-
-  function sanitiseCommitMessage (commitMessage) {
-    return commitMessage.replace(/"/g, '\'');
-  }
-
-  function saveRepo (isNew, dashboard, commitMessage, req, res) {
-    var tmpId = '' + Date.now() + Math.round(Math.random() * 100000),
-        redirectUrl = '/dashboard/' + tmpId + '/rescue';
-
-    tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: dashboard };
-
-    repo.save(isNew, dashboard, sanitiseCommitMessage(commitMessage), function (err) {
-      if (err) {
-        console.error(err);
-        req.flash('error', err.message ? err.message : err);
-        res.redirect(redirectUrl);
-      } else {
-        jenkins.deploy(function (err) {
-          if (err) {
-            console.error(err);
-            req.flash('error', err.message + ' Your changes have been made and are safe.');
-            res.redirect(redirectUrl);
-          } else {
-            var cachebust = Math.floor(Math.random() * (999999) + 999999);
-            var updateMessage = [
-              'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
-              dashboard.slug,
-              '?cachebust=', cachebust,
-              '" target="_blank"> the &ldquo;',
-              dashboard.title,
-              '&rdquo; dashboard</a> have been saved. ',
-              'GOV.UK preview update in progress&hellip;',
-              '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
-            ].join('');
-            req.flash('info', updateMessage);
-            res.redirect('/');
-          }
-        });
-      }
-    });
-  }
 
   app.listen(3000);
 
