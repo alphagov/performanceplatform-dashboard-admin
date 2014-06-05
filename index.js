@@ -228,7 +228,9 @@ repo.open(function() {
 
     async.series([
       repo.save.bind(repo, isNew, newDashboard, sanitisedCommitMessage),
-      jenkins.deploy.bind(jenkins)
+      jenkins.deploy.bind(jenkins, 'spotlight-config', {
+        APPLICATION_VERSION: 'master'
+      })
     ], function(err, results) {
       if (err) {
         console.error(err);

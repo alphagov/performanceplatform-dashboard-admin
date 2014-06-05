@@ -2,17 +2,19 @@
 var request = require('request');
 
 
-function Jenkins(url, job, token, creds, development) {
+function Jenkins(url, token, creds, development) {
   this.url = url;
-  this.job = job;
   this.token = token;
   this.creds = creds;
   this.development = development;
 }
 
-Jenkins.prototype.deploy = function(callback) {
+Jenkins.prototype.deploy = function(job, params, callback) {
 
-  var url = this.url + '/job/' + this.job + '/build';
+  var url = this.url + '/job/' + job + '/build',
+      paramArray = Object.keys(params).map(function(k) {
+        return { name: k, value: params[k] };
+      });;
 
   if (this.development) callback();
   else {
@@ -21,9 +23,7 @@ Jenkins.prototype.deploy = function(callback) {
       form: {
         token: this.token,
         json: JSON.stringify({
-          parameter: [
-            { name: 'APPLICATION_VERSION', value: 'master' }
-          ]
+          parameter: paramArray
         })
       }
     }, function(err, response, body) {
@@ -49,7 +49,6 @@ Jenkins.prototype.deploy = function(callback) {
 Jenkins.fromConfig = function(config, development) {
   return new Jenkins(
     config.url,
-    config.job,
     config.token,
     config.creds,
     development
