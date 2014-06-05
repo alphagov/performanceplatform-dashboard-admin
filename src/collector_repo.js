@@ -5,15 +5,15 @@ var async = require('async'),
 
 var GitRepo = require('./git_repo');
 
-function ConfigRepo(path, remote, development) {
+function CollectorRepo(path, remote, development) {
   this.path = path;
   this.remote = remote;
   this.development = development;
 }
 
-util.inherits(ConfigRepo, GitRepo);
+util.inherits(CollectorRepo, GitRepo);
 
-ConfigRepo.prototype.save = function (moduleType, dataGroup, dataType, config, callback) {
+CollectorRepo.prototype.save = function (moduleType, dataGroup, dataType, config, callback) {
   var configFilePath = path.join('queries', dataGroup, dataType + '.json'),
       fullConfigFilePath = path.join(this.path, configFilePath);
 
@@ -56,8 +56,8 @@ ConfigRepo.prototype.save = function (moduleType, dataGroup, dataType, config, c
 
 };
 
-ConfigRepo.fromConfig = function(config, development) {
-  return new ConfigRepo(config.path, config.remote, development);
+CollectorRepo.fromConfig = function(config, development) {
+  return new CollectorRepo(config.path, config.remote, development);
 };
 
-module.exports = ConfigRepo;
+module.exports = CollectorRepo;

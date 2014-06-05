@@ -1,12 +1,12 @@
 {
   "development": false,
-  "stub": {
-    "path": "./stub-repo",
+  "spotlight": {
+    "path": "./spotlight-config",
     "remote": "git@github.com:alphagov/spotlight-config.git",
     "json_glob": "dashboards/**/*.json"
   },
   "collectors": {
-    "path": "./collector-config-repo",
+    "path": "./collector-config",
     "remote": "git@github.com:alphagov/performanceplatform-collector-config.git"
   },
   "jenkins": {

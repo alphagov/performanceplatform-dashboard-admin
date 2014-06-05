@@ -8,8 +8,8 @@ var express = require('express'),
     async = require('async'),
     _ = require('lodash');
 
-var StubRepo = require('./src/stub_repo'),
-    ConfigRepo = require('./src/config_repo'),
+var SpotlightRepo = require('./src/spotlight_repo'),
+    CollectorRepo = require('./src/collector_repo'),
     Jenkins = require('./src/jenkins'),
     Dashboards = require('./src/dashboards'),
     GitConfig = require('./src/git_config'),
@@ -18,15 +18,18 @@ var StubRepo = require('./src/stub_repo'),
     modules = require('./src/modules.json');
 
 var app = express(),
-    repo = StubRepo.fromConfig(config.stub, config.development),
-    configRepo = ConfigRepo.fromConfig(config.collectors, config.development),
+    spotlightRepo = SpotlightRepo.fromConfig(config.spotlight, config.development),
+    collectorRepo = CollectorRepo.fromConfig(config.collectors, config.development),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
     moduleHelper = new ModuleHelper(modules);
     tmpDashboardStore = {};
 
-repo.open(function() {
+async.parallel([
+    spotlightRepo.open.bind(spotlightRepo),
+    collectorRepo.open.bind(collectorRepo)
+], function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -54,14 +57,14 @@ repo.open(function() {
   var dashboardCreationBaseView = {
     'moduleHelper': moduleHelper,
     'dashboard': {},
-    'departments': repo.departments,
-    'agencies': repo.agencies,
-    'customer_types': repo.customerTypes,
-    'business_models': repo.businessModels
+    'departments': spotlightRepo.departments,
+    'agencies': spotlightRepo.agencies,
+    'customer_types': spotlightRepo.customerTypes,
+    'business_models': spotlightRepo.businessModels
   };
 
   app.get('/', function (req, res) {
-    var groupedDashboards = Dashboards.splitByType(repo.dashboards);
+    var groupedDashboards = Dashboards.splitByType(spotlightRepo.dashboards);
 
     groupedDashboards = Object.keys(groupedDashboards).reduce(
       function(out, dashboardGroup) {
@@ -138,7 +141,7 @@ repo.open(function() {
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
+    var dashboard = spotlightRepo.selectDashboard(req.params[0]);
 
     res.render('edit',
       _.merge(dashboardCreationBaseView, {
@@ -163,7 +166,7 @@ repo.open(function() {
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    saveDashboard(false, repo.selectDashboard(req.params[0]), req.body.commit_message, req, res);
+    saveDashboard(false, spotlightRepo.selectDashboard(req.params[0]), req.body.commit_message, req, res);
   });
 
   function createDashboard (existingDashboard, form) {
@@ -227,7 +230,7 @@ repo.open(function() {
     tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: newDashboard };
 
     async.series([
-      repo.save.bind(repo, isNew, newDashboard, sanitisedCommitMessage),
+      spotlightRepo.save.bind(spotlightRepo, isNew, newDashboard, sanitisedCommitMessage),
       jenkins.deploy.bind(jenkins, 'spotlight-config', {
         APPLICATION_VERSION: 'master'
       })
@@ -255,7 +258,7 @@ repo.open(function() {
   }
 
   app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
+    var dashboard = spotlightRepo.selectDashboard(req.params[0]);
 
     dashboard.published = true;
 

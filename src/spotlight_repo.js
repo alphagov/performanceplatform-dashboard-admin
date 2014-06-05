@@ -7,7 +7,7 @@ var async = require('async'),
 
 var GitRepo = require('./git_repo');
 
-function StubRepo(path, remote, json_glob, development) {
+function SpotlightRepo(path, remote, json_glob, development) {
   this.path = path;
   this.remote = remote;
   this.json_glob = json_glob;
@@ -16,9 +16,9 @@ function StubRepo(path, remote, json_glob, development) {
   this.dashboards = [];
 }
 
-util.inherits(StubRepo, GitRepo);
+util.inherits(SpotlightRepo, GitRepo);
 
-StubRepo.prototype.save = function(isNew, dashboard, commitMessage, callback) {
+SpotlightRepo.prototype.save = function(isNew, dashboard, commitMessage, callback) {
   var repoPath = require('path').join('dashboards', dashboard.slug + '.json'),
       dashboardPath = require('path').join(this.path, repoPath),
       dashboardJSON = JSON.stringify(dashboard, null, '  ') + "\n",
@@ -55,13 +55,13 @@ StubRepo.prototype.save = function(isNew, dashboard, commitMessage, callback) {
   }
 };
 
-StubRepo.prototype.selectDashboard = function (slug) {
+SpotlightRepo.prototype.selectDashboard = function (slug) {
   return this.dashboards.filter(function (dashboard) {
     return (dashboard.slug === slug);
   })[0];
 };
 
-StubRepo.prototype.validate = function(dashboard) {
+SpotlightRepo.prototype.validate = function(dashboard) {
   var validator = new jsonschema.Validator(),
       schemaDirectory = require('path').join('../', this.path, 'schema'),
       dashboardResult = validator.validate(dashboard,
@@ -107,11 +107,11 @@ StubRepo.prototype.validate = function(dashboard) {
   });
 };
 
-StubRepo.prototype.reloadMetadata = function (callback) {
+SpotlightRepo.prototype.reloadMetadata = function (callback) {
   this.updateDashboards(callback);
 };
 
-StubRepo.prototype.updateDashboards = function (callback) {
+SpotlightRepo.prototype.updateDashboards = function (callback) {
   this._updateDashboardsList(function (err) {
     if (err) {
       callback(err);
@@ -121,7 +121,7 @@ StubRepo.prototype.updateDashboards = function (callback) {
   }.bind(this));
 };
 
-StubRepo.prototype._updateDashboardsList = function(callback) {
+SpotlightRepo.prototype._updateDashboardsList = function(callback) {
   var joined_glob = require('path').join(this.path, this.json_glob);
 
   glob(joined_glob, function(err, files){
@@ -137,7 +137,7 @@ StubRepo.prototype._updateDashboardsList = function(callback) {
   }.bind(this));
 };
 
-StubRepo.prototype._updateClassifications = function(callback) {
+SpotlightRepo.prototype._updateClassifications = function(callback) {
   async.map([
     require('path').join(this.path, 'departments.json'),
     require('path').join(this.path, 'agencies.json'),
@@ -179,8 +179,8 @@ StubRepo.prototype._updateClassifications = function(callback) {
   }.bind(this));
 };
 
-StubRepo.fromConfig = function(config, development) {
-  return new StubRepo(config.path, config.remote, config.json_glob, development);
+SpotlightRepo.fromConfig = function(config, development) {
+  return new SpotlightRepo(config.path, config.remote, config.json_glob, development);
 };
 
-module.exports = StubRepo;
+module.exports = SpotlightRepo;
