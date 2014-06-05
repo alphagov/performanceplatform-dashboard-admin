@@ -49,7 +49,6 @@ repo.open(function() {
   });
 
   var dashboardCreationBaseView = {
-    'modules': modules,
     'dashboard': {},
     'departments': repo.departments,
     'agencies': repo.agencies,
@@ -82,6 +81,28 @@ repo.open(function() {
     });
   });
 
+  function parseModules(modules, dashboard) {
+    return modules.map(function(module) {
+
+      if (dashboard.modules) {
+        module.existing = _.flatten(module.slugs.map(function(slug) {
+          var matched = dashboard.modules.filter(function(dashboardModule) {
+            return dashboardModule.slug === slug;
+          });
+
+          return matched;
+        }));
+
+        module.enabled = module.existing.length > 0 && module.existing.every(function(m) { return !m.disabled });
+      } else {
+        module.existing = [ ];
+        module.enabled = false;
+      }
+
+      return module;
+    });
+  }
+
   app.get('/dashboard/create', function (req, res) {
     var dashboard = {
           'relatedPages': {}
@@ -105,7 +126,8 @@ repo.open(function() {
           res.render('create',
             _.merge(dashboardCreationBaseView, {
               'action': '/dashboard/create',
-              'dashboard': dashboard
+              'dashboard': dashboard,
+              'modules': parseModules(modules, dashboard)
             })
           );
         }
@@ -114,7 +136,8 @@ repo.open(function() {
       res.render('create',
         _.merge(dashboardCreationBaseView, {
           'action': '/dashboard/create',
-          'dashboard': dashboard
+          'dashboard': dashboard,
+          'modules': parseModules(modules, dashboard)
         })
       );
     }
@@ -140,7 +163,8 @@ repo.open(function() {
     res.render('edit',
       _.merge(dashboardCreationBaseView, {
         'action': '/dashboard/' + dashboard.slug + '/edit',
-        'dashboard': dashboard
+        'dashboard': dashboard,
+        'modules': parseModules(modules, dashboard)
       })
     );
   });
