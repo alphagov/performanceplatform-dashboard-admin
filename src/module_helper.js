@@ -21,14 +21,14 @@ ModuleHelper.prototype.strip = function(existingModules) {
 
 };
 
-ModuleHelper.prototype.modified = function(form) {
+ModuleHelper.prototype.generateCollectors = function(dataGroup, form) {
 
   return _.flatten(this.modules.map(function(m) {
     var moduleConfig = [];
-    if (m.built) {
-      moduleConfig = m.templates.map(function(template) {
+    if (m.built && m.collector_templates) {
+      moduleConfig = m.collector_templates.map(function(template) {
         var templateContent = fs.readFileSync('./templates/' + template).toString('utf8'),
-            rendered = mustache.render(templateContent, { form: form });
+            rendered = mustache.render(templateContent, { dataGroup: dataGroup, form: form });
 
         return JSON.parse(rendered);
       });
@@ -36,7 +36,22 @@ ModuleHelper.prototype.modified = function(form) {
     return moduleConfig;
   }));
 
-  return newModules.concat(remainingModules);
+};
+
+ModuleHelper.prototype.generateModules = function(dataGroup, form) {
+
+  return _.flatten(this.modules.map(function(m) {
+    var moduleConfig = [];
+    if (m.built) {
+      moduleConfig = m.module_templates.map(function(template) {
+        var templateContent = fs.readFileSync('./templates/' + template).toString('utf8'),
+            rendered = mustache.render(templateContent, { dataGroup: dataGroup, form: form });
+
+        return JSON.parse(rendered);
+      });
+    }
+    return moduleConfig;
+  }));
 
 };
 

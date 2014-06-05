@@ -2,8 +2,8 @@ p The live service usage module measures the number of users on the GOV.UK start
 
 .form-group
   label(for='module_realtime_ga_profile') GA profile ID
-  input.form-control(type='text', value=module.collector && module.collector.query.ids, id='module_realtime_ga_profile', name='module_realtime_ga_profile')
+  input.form-control(type='text', value=(module.collector && module.collector.query.ids) || 'ga:84778268', id='module_realtime_ga_profile', name='module_realtime_ga_profile')
 
 .form-group
-  label(for='module_realtime_path') Slug
-  input.form-control(type='text', value=moduleHelper.getRealtimePath(module) || moduleHelper.getSlug(dashboard), id='module_realtime_path', name='module_realtime_path')
+  label(for='module_realtime_slug') Slug
+  input.form-control(type='text', value=moduleHelper.getRealtimePath(module) || moduleHelper.getSlug(dashboard), id='module_realtime_slug', name='module_realtime_slug')

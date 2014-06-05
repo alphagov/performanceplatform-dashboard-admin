@@ -222,7 +222,8 @@ async.parallel([
         redirectUrl = '/dashboard/' + tmpId + '/rescue',
         newDashboard = createDashboard(existingDashboard, req.body),
         strippedModules = moduleHelper.strip(newDashboard.modules),
-        newModules = moduleHelper.modified(req.body),
+        newModules = moduleHelper.generateModules(newDashboard.slug, req.body),
+        newCollectors = moduleHelper.generateCollectors(newDashboard.slug, req.body),
         sanitisedCommitMessage = sanitiseCommitMessage(commitMessage);
 
     newDashboard.modules = newModules.concat(strippedModules);
