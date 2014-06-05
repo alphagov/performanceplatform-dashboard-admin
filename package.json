@@ -5,7 +5,7 @@
   "dependencies": {
     "express": "4.3.2",
     "jade": "1.3.1",
-    "jade-dynamic-includes": "0.2.2",
+    "jade-dynamic-includes": "alexmuller/jade-dynamic-includes#fix-options",
     "glob": "4.0.0",
     "gitty": "2.1.0",
     "async": "0.9.0",
