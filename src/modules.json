@@ -9,13 +9,13 @@
   },
   {
     "id": "tx",
-    "title": "Transactions explorer",
+    "title": "Transactions Explorer",
     "slugs": [
       "cost-per-transaction",
       "transactions-per-year",
       "total-cost"
     ],
-    "built": false
+    "built": true
   },
   {
     "id": "volumetrics",
