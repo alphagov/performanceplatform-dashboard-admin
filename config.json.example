@@ -31,4 +31,9 @@
       "pingdom": ""
     }
   }
+  "pingdom": {
+    "username": "email@example.com",
+    "password": "PASSWORD",
+    "app_key" : "APPLICATION_KEY"
+  }
 }

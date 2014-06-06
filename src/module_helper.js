@@ -1,6 +1,7 @@
 
 var mustache = require('mustache'),
-    fs = require('fs');
+    fs = require('fs'),
+    _ = require('lodash');
 
 function ModuleHelper(modules, collectorRepo) {
   this.modules = modules;
