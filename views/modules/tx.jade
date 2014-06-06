@@ -3,4 +3,6 @@ p
   <a href='https://docs.google.com/a/digital.cabinet-office.gov.uk/spreadsheet/ccc?key=0AiLXeWvTKFmBdFpxdEdHUWJCYnVMS0lnUHJDelFVc0E&usp=drive_web' target='_blank'>Transactions Explorer</a>
   | and we can add key performance indicators to the dashboard.
 
-input(type='text', placeholder='dft-tax-a-vehicle', value=moduleHelper.getTxIdentifier(module), id='module_tx_identifier', name='module_tx_identifier')
+.form-group
+  label(for='module_tx_identifier') Identifier
+  input.form-control(type='text', placeholder='dft-tax-a-vehicle', value=moduleHelper.getTxIdentifier(module), id='module_tx_identifier', name='module_tx_identifier')

@@ -8,25 +8,30 @@ var express = require('express'),
     async = require('async'),
     _ = require('lodash');
 
-var StubRepo = require('./src/stub_repo'),
-    ConfigRepo = require('./src/config_repo'),
+var SpotlightRepo = require('./src/spotlight_repo'),
+    CollectorRepo = require('./src/collector_repo'),
     Jenkins = require('./src/jenkins'),
     Dashboards = require('./src/dashboards'),
     GitConfig = require('./src/git_config'),
     GovUK = require('./src/govuk.js'),
     ModuleHelper = require('./src/module_helper.js'),
+    Stagecraft = require('./src/stagecraft.js'),
     modules = require('./src/modules.json');
 
 var app = express(),
-    repo = StubRepo.fromConfig(config.stub, config.development),
-    configRepo = ConfigRepo.fromConfig(config.collectors, config.development),
+    spotlightRepo = SpotlightRepo.fromConfig(config.spotlight, config.development),
+    collectorRepo = CollectorRepo.fromConfig(config.collectors, config.development),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
-    moduleHelper = new ModuleHelper(modules);
+    stagecraft = Stagecraft.fromConfig(config.stagecraft, config.development),
+    moduleHelper = new ModuleHelper(modules, collectorRepo);
     tmpDashboardStore = {};
 
-repo.open(function() {
+async.parallel([
+    spotlightRepo.open.bind(spotlightRepo),
+    collectorRepo.open.bind(collectorRepo)
+], function() {
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -54,14 +59,14 @@ repo.open(function() {
   var dashboardCreationBaseView = {
     'moduleHelper': moduleHelper,
     'dashboard': {},
-    'departments': repo.departments,
-    'agencies': repo.agencies,
-    'customer_types': repo.customerTypes,
-    'business_models': repo.businessModels
+    'departments': spotlightRepo.departments,
+    'agencies': spotlightRepo.agencies,
+    'customer_types': spotlightRepo.customerTypes,
+    'business_models': spotlightRepo.businessModels
   };
 
   app.get('/', function (req, res) {
-    var groupedDashboards = Dashboards.splitByType(repo.dashboards);
+    var groupedDashboards = Dashboards.splitByType(spotlightRepo.dashboards);
 
     groupedDashboards = Object.keys(groupedDashboards).reduce(
       function(out, dashboardGroup) {
@@ -138,7 +143,7 @@ repo.open(function() {
   });
 
   app.get(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
+    var dashboard = spotlightRepo.selectDashboard(req.params[0]);
 
     res.render('edit',
       _.merge(dashboardCreationBaseView, {
@@ -163,7 +168,7 @@ repo.open(function() {
   });
 
   app.post(/\/dashboard\/(.+)\/edit/, function (req, res) {
-    saveDashboard(false, repo.selectDashboard(req.params[0]), req.body.commit_message, req, res);
+    saveDashboard(false, spotlightRepo.selectDashboard(req.params[0]), req.body.commit_message, req, res);
   });
 
   function createDashboard (existingDashboard, form) {
@@ -219,7 +224,8 @@ repo.open(function() {
         redirectUrl = '/dashboard/' + tmpId + '/rescue',
         newDashboard = createDashboard(existingDashboard, req.body),
         strippedModules = moduleHelper.strip(newDashboard.modules),
-        newModules = moduleHelper.modified(req.body),
+        newModules = moduleHelper.generateModules(newDashboard.slug, req.body),
+        newCollectors = moduleHelper.generateCollectors(newDashboard.slug, req.body),
         sanitisedCommitMessage = sanitiseCommitMessage(commitMessage);
 
     newDashboard.modules = newModules.concat(strippedModules);
@@ -227,8 +233,16 @@ repo.open(function() {
     tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: newDashboard };
 
     async.series([
-      repo.save.bind(repo, isNew, newDashboard, sanitisedCommitMessage),
-      jenkins.deploy.bind(jenkins)
+      stagecraft.createDataSetsForCollectors.bind(stagecraft, newCollectors),
+      collectorRepo.saveAll.bind(collectorRepo, newCollectors, sanitisedCommitMessage),
+      jenkins.deploy.bind(jenkins, 'collectors-deploy', {
+        APPLICATION_VERSION: 'master',
+        APPLICATION_NAME: 'performanceplatform-collector'
+      }),
+      spotlightRepo.save.bind(spotlightRepo, isNew, newDashboard, sanitisedCommitMessage),
+      jenkins.deploy.bind(jenkins, 'spotlight-config-deploy', {
+        APPLICATION_VERSION: 'master'
+      })
     ], function(err, results) {
       if (err) {
         console.error(err);
@@ -253,7 +267,7 @@ repo.open(function() {
   }
 
   app.post(/\/dashboard\/(.+)\/publish/, function (req, res) {
-    var dashboard = repo.selectDashboard(req.params[0]);
+    var dashboard = spotlightRepo.selectDashboard(req.params[0]);
 
     dashboard.published = true;
 

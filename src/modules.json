@@ -7,10 +7,10 @@
       "total-cost",
       "cost-per-transaction"
     ],
-    "templates": [
-      "tx/transactions-per-year.mus",
-      "tx/total-cost.mus",
-      "tx/cost-per-transaction.mus"
+    "module_templates": [
+      "module/tx/transactions-per-year.mus",
+      "module/tx/total-cost.mus",
+      "module/tx/cost-per-transaction.mus"
     ],
     "built": true
   },
@@ -20,7 +20,14 @@
     "slugs": [
       "live-service-usage"
     ],
-    "built": false
+    "data_type": "realtime",
+    "module_templates": [
+      "module/realtime.mus"
+    ],
+    "collector_templates": [
+      "collector/realtime.mus"
+    ],
+    "built": true
   },
   {
     "id": "volumetrics",
@@ -40,8 +47,8 @@
     "slugs": [
       "user-satisfaction"
     ],
-    "templates": [
-      "user-satisfaction.mus"
+    "module_templates": [
+      "module/user-satisfaction.mus"
     ],
     "built": true
   },

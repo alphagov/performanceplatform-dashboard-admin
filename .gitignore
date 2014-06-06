@@ -1,4 +1,4 @@
-collector-config-repo/
 node_modules/
-stub-repo/
+spotlight-config/
+collector-config/
 config.json
