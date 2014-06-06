@@ -84,7 +84,12 @@
   {
     "id": "service-availability",
     "title": "Service availability",
-    "slugs": [],
+    "slugs": [
+      "service-availability"
+    ],
+    "templates": [
+      "service-availability"
+    ],
     "built": false
   }
 ]
