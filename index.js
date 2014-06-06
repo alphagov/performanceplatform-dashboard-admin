@@ -257,7 +257,7 @@ async.parallel([
           '" target="_blank"> the &ldquo;',
           newDashboard.title,
           '&rdquo; dashboard</a> have been saved. ',
-          'GOV.UK preview update in progress&hellip;',
+          '<span id="deploy-status-message">GOV.UK preview update in progress&hellip;</span>',
           '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
         ].join('');
         req.flash('info', updateMessage);
@@ -288,7 +288,7 @@ async.parallel([
           '" target="_blank"> the &ldquo;',
           dashboard.title,
           '&rdquo; dashboard</a> has been published on the Performance Platform homepage. ',
-          'GOV.UK preview update in progress&hellip;',
+          '<span id="deploy-status-message">GOV.UK preview update in progress&hellip;</span>',
           '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
         ].join('');
         req.flash('info', updateMessage);
