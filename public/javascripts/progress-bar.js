@@ -16,6 +16,10 @@ $(document).ready(function () {
 
     if (progress > 100) {
       window.clearInterval(intervalID);
+      $('#deploy-progress').hide();
+      if ($('#deploy-status-message').length > 0) {
+        $('#deploy-status-message').text('GOV.UK preview updated!');
+      }
     }
 
     $('#deploy-progress .progress-bar').css('width', progress + '%');

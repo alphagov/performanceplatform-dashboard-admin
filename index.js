@@ -25,7 +25,7 @@ var app = express(),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
     stagecraft = Stagecraft.fromConfig(config.stagecraft, config.development),
-    moduleHelper = new ModuleHelper(modules, collectorRepo);
+    moduleHelper = new ModuleHelper(modules, collectorRepo),
     tmpDashboardStore = {};
 
 async.parallel([
@@ -249,19 +249,50 @@ async.parallel([
         req.flash('error', err.message ? err.message : err);
         res.redirect(redirectUrl);
       } else {
-          var cachebust = Math.floor(Math.random() * (999999) + 999999);
-          var updateMessage = [
-            'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
-            newDashboard.slug,
-            '?cachebust=', cachebust,
-            '" target="_blank"> the &ldquo;',
-            newDashboard.title,
-            '&rdquo; dashboard</a> have been saved. ',
-            'GOV.UK preview update in progress&hellip;',
-            '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
-          ].join('');
-          req.flash('info', updateMessage);
-          res.redirect('/');
+        var cachebust = Math.floor(Math.random() * (999999) + 999999);
+        var updateMessage = [
+          'Your changes to <a href="https://www.preview.alphagov.co.uk/performance/',
+          newDashboard.slug,
+          '?cachebust=', cachebust,
+          '" target="_blank"> the &ldquo;',
+          newDashboard.title,
+          '&rdquo; dashboard</a> have been saved. ',
+          '<span id="deploy-status-message">GOV.UK preview update in progress&hellip;</span>',
+          '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
+        ].join('');
+        req.flash('info', updateMessage);
+        res.redirect('/');
+      }
+    });
+  }
+
+  function publishDashboard (dashboard, req, res) {
+    var commitMessage = sanitiseCommitMessage('Publish \'' + dashboard.title + '\' dashboard');
+
+    async.series([
+      spotlightRepo.save.bind(spotlightRepo, false, dashboard, commitMessage),
+      jenkins.deploy.bind(jenkins, 'spotlight-config-deploy', {
+        APPLICATION_VERSION: 'master'
+      })
+    ], function(err, results) {
+      if (err) {
+        console.error(err);
+        req.flash('error', err.message ? err.message : err);
+        res.redirect('/');
+      } else {
+        var cachebust = Math.floor(Math.random() * (999999) + 999999);
+        var updateMessage = [
+          'The <a href="https://www.preview.alphagov.co.uk/performance/',
+          dashboard.slug,
+          '?cachebust=', cachebust,
+          '" target="_blank"> the &ldquo;',
+          dashboard.title,
+          '&rdquo; dashboard</a> has been published on the Performance Platform homepage. ',
+          '<span id="deploy-status-message">GOV.UK preview update in progress&hellip;</span>',
+          '<div id="deploy-progress" class="progress"><div class="progress-bar" style="width:0%;"></div></div>'
+        ].join('');
+        req.flash('info', updateMessage);
+        res.redirect('/');
       }
     });
   }
@@ -271,7 +302,7 @@ async.parallel([
 
     dashboard.published = true;
 
-    saveDashboard(false, dashboard, 'Publish \'' + dashboard.title + '\' dashboard', req, res);
+    publishDashboard(dashboard, req, res);
   });
 
   app.listen(3000);

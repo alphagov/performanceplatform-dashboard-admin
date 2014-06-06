@@ -29,4 +29,20 @@ $(document).ready(function () {
     $(id).toggleClass('open');
     e.preventDefault();
   });
+
+  // Edit summary
+  $('#save-changes').delegate('#commit_message', 'keydown', function (e) {
+    var helpTextBlock = $(this).next('p.help-block'),
+        textLength = $(this).val().length;
+
+    if (textLength > 48 && textLength <= 60) {
+      helpTextBlock.text('Getting a bit long now...');
+    } else if (textLength > 60) {
+      helpTextBlock.text('Come on, this is ridiculous. We said a short summary!');
+    } else {
+      helpTextBlock.text('A short summary of what you\'ve changed');
+    }
+  });
+
+
 });
