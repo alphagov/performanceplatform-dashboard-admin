@@ -34,7 +34,7 @@ SpotlightRepo.prototype.save = function(isNew, dashboard, commitMessage, callbac
         var gitActions = [
           fs.writeFile.bind(fs, dashboardPath, dashboardJSON, {'encoding': 'utf8'}),
           this._repo.add.bind(this._repo, [repoPath]),
-          this._repo.commit.bind(this._repo, commitMessage),
+          this.commit.bind(this, commitMessage),
           this.updateDashboards.bind(this)
         ];
 

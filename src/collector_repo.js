@@ -2,7 +2,8 @@ var async = require('async'),
     fs = require('fs-extra'),
     path = require('path'),
     util = require('util'),
-    glob = require('glob');
+    glob = require('glob'),
+    _ = require('lodash');
 
 var GitRepo = require('./git_repo');
 
@@ -58,7 +59,7 @@ CollectorRepo.prototype.saveAll = function(collectors, commitMessage, callback) 
   actions.push.apply(actions, [
     this._generateCronJobs.bind(this),
     this._repo.add.bind(this._repo, ['./cronjobs']),
-    this._repo.commit.bind(this._repo, commitMessage)
+    this.commit.bind(this, commitMessage)
   ]);
 
   if (this.development) {
