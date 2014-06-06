@@ -30,7 +30,7 @@
       "ga-realtime": "",
       "pingdom": ""
     }
-  }
+  },
   "pingdom": {
     "username": "email@example.com",
     "password": "PASSWORD",
