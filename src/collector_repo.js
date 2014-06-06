@@ -69,7 +69,6 @@ CollectorRepo.prototype.saveAll = function(collectors, commitMessage, callback) 
 
   async.series(_.flatten(actions),
     function (err, results) {
-      console.log(err, results);
       callback(err);
     }
   );

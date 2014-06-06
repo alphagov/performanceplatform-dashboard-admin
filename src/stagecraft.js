@@ -3,10 +3,58 @@ var request = require('request'),
     _ = require('lodash');
 
 
-function Stagecraft(url, creds) {
+function Stagecraft(url, creds, tokens, development) {
   this.url = url;
   this.creds = creds;
+  this.tokens = tokens;
+  this.development = development;
 }
+
+Stagecraft.prototype.createDataSetsForCollectors = function(collectors, callback) {
+  if (collectors.length === 0) callback();
+  else {
+    var slug = collectors[0]['data-set']['data-group'];
+
+    this.addDataGroup(slug, function(err) {
+      if (err && err != Stagecraft.DATA_GROUP_EXISTS) callback(err);
+      else {
+        async.series([
+          this.getDataGroups.bind(this),
+          this.getDataTypes.bind(this),
+          this.getDataSets.bind(this)
+        ],
+        function(err, results) {
+          if (err) callback(err);
+          else {
+            var dataGroups = results[0],
+                dataTypes = results[1],
+                dataSets = results[2],
+                dataGroupId = dataGroups.filter(function(dg) {
+                  return dg.name === slug;
+                })[0].id, actions;
+
+            actions = collectors.map(function(collector) {
+              var dataType = collector['data-set']['data-type'],
+                  dataTypeId = dataTypes.filter(function(dt) {
+                    return dt.name === dataType;
+                  })[0].id,
+                  token = this.tokens[collector['token']];
+
+              return this.addDataSet.bind(this, token, dataGroupId, dataTypeId)
+            }.bind(this));
+
+            if (this.development) {
+              console.log("Don't create data sets in development mode");
+              callback(); 
+            } else {
+              async.parallel(actions, callback);
+            }
+          }
+        }.bind(this));
+      }
+    }.bind(this));
+  }
+};
 
 Stagecraft.prototype.getDataGroups = function(callback) {
   this._getList('datagroup', callback);
@@ -35,6 +83,7 @@ Stagecraft.prototype.addDataSet = function(token, dataGroup, dataType, callback)
     'max_age_expected': 360,
     '_save': 'Save'
   }, function(err, response, body) {
+    console.log(response);
     callback(err);
   });
 };
@@ -75,8 +124,6 @@ Stagecraft.prototype._getList = function(type, callback) {
           var rx = new RegExp('/admin/datasets/' + type + '/([0-9]+)/[^"]*">([^<]+)<', 'g'),
               list = [],
               match;
-
-  console.log(body);
 
           while (match = rx.exec(body)) {
             list.push({
@@ -183,10 +230,12 @@ Stagecraft.prototype._findCookieValue = function(headers, key) {
 
 Stagecraft.DATA_GROUP_EXISTS = 'data-group-exists';
 
-Stagecraft.fromConfig = function(config) {
+Stagecraft.fromConfig = function(config, development) {
   return new Stagecraft(
     config.url,
-    config.creds
+    config.creds,
+    config.tokens,
+    development
   );
 };
 

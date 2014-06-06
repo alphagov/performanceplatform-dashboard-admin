@@ -25,6 +25,10 @@
     "creds": {
       "user": "[USERNAME_HERE]",
       "password": "[PASSWORD_HERE]"
+    },
+    "tokens": {
+      "ga-realtime": "",
+      "pingdom": ""
     }
   }
 }

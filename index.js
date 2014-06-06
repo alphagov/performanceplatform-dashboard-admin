@@ -15,6 +15,7 @@ var SpotlightRepo = require('./src/spotlight_repo'),
     GitConfig = require('./src/git_config'),
     GovUK = require('./src/govuk.js'),
     ModuleHelper = require('./src/module_helper.js'),
+    Stagecraft = require('./src/stagecraft.js'),
     modules = require('./src/modules.json');
 
 var app = express(),
@@ -23,6 +24,7 @@ var app = express(),
     jenkins = Jenkins.fromConfig(config.jenkins, config.development),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
+    stagecraft = Stagecraft.fromConfig(config.stagecraft, config.development),
     moduleHelper = new ModuleHelper(modules, collectorRepo);
     tmpDashboardStore = {};
 
@@ -231,9 +233,14 @@ async.parallel([
     tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: newDashboard };
 
     async.series([
+      stagecraft.createDataSetsForCollectors.bind(stagecraft, newCollectors),
       collectorRepo.saveAll.bind(collectorRepo, newCollectors, sanitisedCommitMessage),
+      jenkins.deploy.bind(jenkins, 'collectors-deploy', {
+        APPLICATION_VERSION: 'master',
+        APPLICATION_NAME: 'performanceplatform-collector'
+      }),
       spotlightRepo.save.bind(spotlightRepo, isNew, newDashboard, sanitisedCommitMessage),
-      jenkins.deploy.bind(jenkins, 'spotlight-config', {
+      jenkins.deploy.bind(jenkins, 'spotlight-config-deploy', {
         APPLICATION_VERSION: 'master'
       })
     ], function(err, results) {
