@@ -1,5 +1,6 @@
 
-var request = require('request'),
+var async = require('async'),
+    request = require('request'),
     _ = require('lodash');
 
 
@@ -11,8 +12,10 @@ function Stagecraft(url, creds, tokens, development) {
 }
 
 Stagecraft.prototype.createDataSetsForCollectors = function(collectors, callback) {
-  if (collectors.length === 0) callback();
-  else {
+  if (this.development || collectors.length === 0) {
+    console.log('no need to talk to stagecraft');
+    callback();
+  } else {
     var slug = collectors[0]['data-set']['data-group'];
 
     this.addDataGroup(slug, function(err) {
@@ -83,7 +86,6 @@ Stagecraft.prototype.addDataSet = function(token, dataGroup, dataType, callback)
     'max_age_expected': 360,
     '_save': 'Save'
   }, function(err, response, body) {
-    console.log(response);
     callback(err);
   });
 };

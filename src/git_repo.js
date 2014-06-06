@@ -17,6 +17,17 @@ GitRepo.prototype.open = function(callback) {
 
 };
 
+GitRepo.prototype.commit = function (commitMessage, callback) {
+  this._repo.commit(commitMessage, function(err) {
+    if (err) {
+      if (/nothing to commit/.test(err)) callback();
+      else callback(err);
+    } else {
+      callback();
+    }
+  });
+};
+
 GitRepo.prototype.save = function (callback) {
   throw('Unimplemented');
 };
