@@ -1,8 +1,8 @@
 $(document).ready(function () {
   var progress = 0;
 
-  var minDeployTime = 18,
-      maxDeployTime = 24,
+  var minDeployTime = 20,
+      maxDeployTime = 28,
       intervalTime = 0.5;
 
   var minProgress = 100 / (maxDeployTime / intervalTime),
