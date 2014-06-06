@@ -25,7 +25,7 @@ var app = express(),
     gitConfig = new GitConfig(),
     govuk = GovUK.fromConfig(config.govuk),
     stagecraft = Stagecraft.fromConfig(config.stagecraft, config.development),
-    moduleHelper = new ModuleHelper(modules, collectorRepo);
+    moduleHelper = new ModuleHelper(modules, collectorRepo),
     tmpDashboardStore = {};
 
 async.parallel([
