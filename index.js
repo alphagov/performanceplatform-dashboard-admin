@@ -231,6 +231,7 @@ async.parallel([
     tmpDashboardStore[tmpId] = { isNew: isNew, dashboard: newDashboard };
 
     async.series([
+      collectorRepo.saveAll.bind(collectorRepo, newCollectors, sanitisedCommitMessage),
       spotlightRepo.save.bind(spotlightRepo, isNew, newDashboard, sanitisedCommitMessage),
       jenkins.deploy.bind(jenkins, 'spotlight-config', {
         APPLICATION_VERSION: 'master'

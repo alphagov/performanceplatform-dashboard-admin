@@ -1,0 +1,14 @@
+{
+  "data-set": {
+    "data-group": "{{ dataGroup }}",
+    "data-type": "realtime"
+  },
+  "entrypoint": "performanceplatform.collector.ga.realtime",
+  "options": {},
+  "query": {
+    "filters": "ga:pagePath=~^/{{ form.module_realtime_slug }}$",
+    "ids": "{{ form.module_realtime_ga_profile }}",
+    "metrics": "ga:activeVisitors"
+  },
+  "token": "ga-realtime"
+}

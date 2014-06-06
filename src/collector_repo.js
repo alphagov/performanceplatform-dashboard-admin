@@ -40,47 +40,46 @@ CollectorRepo.prototype.reloadMetadata = function(callback) {
   }.bind(this));
 };
 
-CollectorRepo.prototype.save = function (moduleType, dataGroup, dataType, config, callback) {
-  var configFilePath = path.join('queries', dataGroup, dataType + '.json'),
-      fullConfigFilePath = path.join(this.path, configFilePath);
+CollectorRepo.prototype.saveAll = function(collectors, commitMessage, callback) {
 
-  if (moduleType !== 'realtime') {
-    throw('Saving to the config repo only supports realtime modules at the moment...');
-  }
+  var actions = collectors.map(function(collector) {
+    var dataGroup = collector['data-set']['data-group'],
+        dataType = collector['data-set']['data-type'],
+        configFilePath = path.join('queries', dataGroup, dataType + '.json'),
+        fullConfigFilePath = path.join(this.path, configFilePath);
 
-  configJSON = JSON.stringify({
-    "data-set": {
-      "data-group": dataGroup,
-      "data-type": dataType
-    },
-    "entrypoint": "performanceplatform.collector.ga.realtime",
-    "options": {},
-    "query": {
-      "filters": "ga:pagePath=~/" + config['start-page-slug'],
-      "ids": "ga:84779739",
-      "metrics": "ga:activeVisitors"
-    },
-    "token": "ga-realtime"
-  }, null, '  ') + "\n";
+    return [
+      fs.outputFile.bind(fs, fullConfigFilePath,
+        JSON.stringify(collector, null, '  ') + '\n', { 'encoding': 'utf8' }),
+      this._repo.add.bind(this._repo, [configFilePath])
+    ];
+  }.bind(this));
 
-  var gitActions = [
-    fs.outputFile.bind(fs, fullConfigFilePath, configJSON, {'encoding': 'utf8'}),
-    this._repo.add.bind(this._repo, [configFilePath]),
-    this._repo.commit.bind(this._repo, 'Adding ' + moduleType + ' configuration for ' + dataGroup)
-  ];
+  actions.push.apply(actions, [
+    this._generateCronJobs.bind(this),
+    this._repo.add.bind(this._repo, ['./cronjobs']),
+    this._repo.commit.bind(this._repo, commitMessage)
+  ]);
 
   if (this.development) {
     console.log('Not pushing config changes while in development.');
   } else {
-    gitActions.push(this._repo.push.bind(this._repo, 'origin', 'master', null));
+    actions.push(this._repo.push.bind(this._repo, 'origin', 'master', null));
   }
 
-  async.series(gitActions,
+  async.series(_.flatten(actions),
     function (err, results) {
+      console.log(err, results);
       callback(err);
     }
   );
 
+};
+
+CollectorRepo.prototype._generateCronJobs = function(callback) {
+  var command = 'cd ' + this.path + ' && python tools/cronjobs.py > cronjobs';
+
+  require('child_process').exec(command, callback);
 };
 
 CollectorRepo.fromConfig = function(config, development) {
